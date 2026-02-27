@@ -4,6 +4,12 @@
     { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/api/(.*)", "dest": "server.js" },
+    { "src": "/css/(.*)", "dest": "/css/$1" },
+    { "src": "/js/(.*)",  "dest": "/js/$1" },
+    { "src": "/pages/(.*)", "dest": "/pages/$1" },
+    { "src": "/logo.png", "dest": "/logo.png" },
+    { "src": "/bg_video.mp4", "dest": "/bg_video.mp4" },
     { "src": "/(.*)", "dest": "server.js" }
   ]
 }
