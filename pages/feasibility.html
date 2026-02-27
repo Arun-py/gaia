@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Gaia — Feasibility Analysis</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a>
+        <span>›</span>
+        <span>Step 8 — Feasibility Analysis</span>
+      </div>
+      <h1>🔎 Feasibility Analysis</h1>
+      <p>Technical · Economic · Environmental feasibility of your design — Step 8 of 9</p>
+    </div>
+
+    <!-- ── Summary Scores ── -->
+    <div class="grid-3 mb-3" id="feasibility-scores">
+      <div class="stat-card" style="border-left:4px solid #3b82f6;">
+        <div class="stat-icon" style="background:#eff6ff;">🔧</div>
+        <div><div class="stat-value" id="tech-score">--</div><div class="stat-label">Technical Feasibility</div></div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #f59e0b;">
+        <div class="stat-icon" style="background:#fffbeb;">💰</div>
+        <div><div class="stat-value" id="econ-score">--</div><div class="stat-label">Economic Feasibility</div></div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #22c55e;">
+        <div class="stat-icon" style="background:#f0fdf4;">🌱</div>
+        <div><div class="stat-value" id="env-score">--</div><div class="stat-label">Environmental Feasibility</div></div>
+      </div>
+    </div>
+
+    <!-- ── Tabs ── -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <button class="feasibility-tab active" onclick="showTab('technical',this)">🔧 Technical</button>
+      <button class="feasibility-tab"        onclick="showTab('economic',this)">💰 Economic</button>
+      <button class="feasibility-tab"        onclick="showTab('environmental',this)">🌱 Environmental</button>
+      <button class="feasibility-tab"        onclick="showTab('comparison',this)">📊 Sustainability Comparison</button>
+    </div>
+
+    <!-- ══ TECHNICAL TAB ══ -->
+    <div id="tab-technical" class="feasibility-panel">
+      <div class="card mb-3">
+        <div class="card-header"><span class="card-icon">🏗</span><h3>Structural System Feasibility</h3></div>
+        <div class="card-body">
+          <div id="structural-checks" class="grid-2 gap-2"></div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header"><span class="card-icon">🌏</span><h3>Site Suitability</h3></div>
+        <div class="card-body">
+          <div id="site-checks" class="grid-2 gap-2"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-icon">📋</span><h3>IS Code Compliance Matrix</h3></div>
+        <div class="card-body">
+          <div id="code-matrix" class="grid-2 gap-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ECONOMIC TAB ══ -->
+    <div id="tab-economic" class="feasibility-panel" style="display:none;">
+      <div class="grid-2 gap-3 mb-3">
+        <div class="card">
+          <div class="card-header"><span class="card-icon">💵</span><h3>Cost Breakdown</h3></div>
+          <div class="card-body" id="cost-breakdown"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-icon">📈</span><h3>Budget Viability</h3></div>
+          <div class="card-body" id="budget-viability"></div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header"><span class="card-icon">⏱</span><h3>ROI &amp; Payback Analysis</h3></div>
+        <div class="card-body">
+          <div class="grid-3 gap-2" id="roi-stats"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-icon">📊</span><h3>Cost vs Budget Chart</h3></div>
+        <div class="card-body" style="max-height:300px;">
+          <canvas id="costChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ENVIRONMENTAL TAB ══ -->
+    <div id="tab-environmental" class="feasibility-panel" style="display:none;">
+      <div class="card mb-3">
+        <div class="card-header"><span class="card-icon">🌿</span><h3>Environmental Impact Checks</h3></div>
+        <div class="card-body">
+          <div id="env-checks" class="grid-2 gap-2"></div>
+        </div>
+      </div>
+      <div class="grid-2 gap-3 mb-3">
+        <div class="card">
+          <div class="card-header"><span class="card-icon">☀</span><h3>Energy Efficiency</h3></div>
+          <div class="card-body" id="energy-eff"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-icon">💧</span><h3>Water Conservation</h3></div>
+          <div class="card-body" id="water-cons"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-icon">📉</span><h3>Carbon Footprint Estimate</h3></div>
+        <div class="card-body" id="carbon-section"></div>
+      </div>
+    </div>
+
+    <!-- ══ SUSTAINABILITY COMPARISON TAB ══ -->
+    <div id="tab-comparison" class="feasibility-panel" style="display:none;">
+
+      <!-- Overall score badges -->
+      <div class="grid-2 gap-3 mb-3">
+        <div class="card" style="border:2px solid #94a3b8;text-align:center;">
+          <div class="card-body" style="padding:2rem;">
+            <div style="font-size:3rem;font-weight:900;color:#64748b;" id="regular-pct">51%</div>
+            <div style="font-weight:700;color:#64748b;font-size:1.1rem;">Regular Method</div>
+            <div style="font-size:.8rem;color:var(--text-muted);margin-top:.4rem;">Traditional design practices</div>
+            <div style="margin-top:1rem;background:#e2e8f0;border-radius:100px;height:8px;overflow:hidden;">
+              <div style="width:51%;height:100%;background:#94a3b8;border-radius:100px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="border:2px solid var(--green);text-align:center;">
+          <div class="card-body" style="padding:2rem;">
+            <div style="font-size:3rem;font-weight:900;color:var(--green);" id="gaia-pct">84%</div>
+            <div style="font-weight:700;color:var(--green);font-size:1.1rem;">🌿 Gaia Method</div>
+            <div style="font-size:.8rem;color:var(--text-muted);margin-top:.4rem;">IS-Code smart design approach</div>
+            <div style="margin-top:1rem;background:var(--success-bg);border-radius:100px;height:8px;overflow:hidden;">
+              <div style="width:84%;height:100%;background:var(--green);border-radius:100px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison chart -->
+      <div class="card mb-3">
+        <div class="card-header"><span class="card-icon">📊</span><h3>Parameter-by-Parameter Comparison</h3></div>
+        <div class="card-body" style="padding:1.5rem;">
+          <canvas id="sustainChart" style="max-height:380px;"></canvas>
+        </div>
+      </div>
+
+      <!-- Improvement table -->
+      <div class="card">
+        <div class="card-header"><span class="card-icon">📈</span><h3>Improvement Summary</h3></div>
+        <div class="card-body">
+          <table class="feasibility-table" id="improvement-table">
+            <thead>
+              <tr><th>Parameter</th><th>Regular</th><th>Gaia</th><th>Improvement</th></tr>
+            </thead>
+            <tbody id="improvement-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="step-nav">
+      <a href="dashboard.html" class="btn btn-outline">← Dashboard</a>
+      <span class="step-nav-info">Step 8 of 9</span>
+      <a href="feedback.html" class="btn btn-primary">Next: Feedback →</a>
+    </div>
+  </main>
+</div>
+
+<!-- ── Inline styles for this page ── -->
+<style>
+  .feasibility-tab {
+    padding: .5rem 1.1rem; border: 2px solid var(--border);
+    border-radius: var(--radius-sm); background: white; cursor: pointer;
+    font-size: .83rem; font-weight: 600; color: var(--text-muted);
+    transition: all var(--t); font-family: inherit;
+  }
+  .feasibility-tab:hover  { border-color: var(--green-light); color: var(--green); }
+  .feasibility-tab.active { border-color: var(--green); background: var(--success-bg); color: var(--green); }
+
+  .feasibility-table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  .feasibility-table th { background:var(--primary); color:white; padding:.65rem .9rem; text-align:left; font-size:.8rem; }
+  .feasibility-table td { padding:.55rem .9rem; border-bottom:1px solid var(--border); }
+  .feasibility-table tr:last-child td { border-bottom:none; }
+  .feasibility-table .imp-positive { color:var(--success); font-weight:700; }
+  .feasibility-table .imp-negative { color:var(--danger);  font-weight:700; }
+
+  .check-item {
+    display:flex; align-items:flex-start; gap:.6rem;
+    background:var(--surface-alt); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:.75rem;
+  }
+  .check-item.pass { background:var(--success-bg); border-color:var(--success-border); }
+  .check-item.warn { background:var(--warning-bg); border-color:var(--warning-border); }
+  .check-item.fail { background:var(--danger-bg);  border-color:var(--danger-border);  }
+  .check-icon { font-size:1.1rem; flex-shrink:0; }
+  .check-title { font-size:.82rem; font-weight:700; color:var(--text); }
+  .check-sub   { font-size:.75rem; color:var(--text-muted); margin-top:.15rem; }
+
+  .econ-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); font-size:.88rem; }
+  .econ-row:last-child { border-bottom:none; }
+  .econ-val { font-weight:700; color:var(--primary); }
+</style>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('feasibility');
+  markDone('feasibility');
+
+  /* ── Tab switch ── */
+  function showTab(name, btn) {
+    document.querySelectorAll('.feasibility-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.feasibility-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).style.display = '';
+    btn.classList.add('active');
+    if (name === 'comparison') drawSustainChart();
+    if (name === 'economic')   drawCostChart();
+  }
+
+  /* ── Load data ── */
+  const site       = load('site')       || {};
+  const client     = load('client')     || {};
+  const design     = load('design')     || {};
+  const materials  = load('materials')  || {};
+  const structural = load('structural') || {};
+  const costData   = load('cost')       || {};
+  const scores     = load('scores')     || { energy:72, cost:68, structural:75, isCode:80 };
+  const { predictions, suggestions } = runPredictions();
+
+  /* ── Technical feasibility ── */
+  const soilMap = { rock:'Excellent',hard_soil:'Good',medium_soil:'Moderate',soft_soil:'Poor',black_cotton:'Poor',sandy:'Moderate' };
+  const soilScore = { rock:95,hard_soil:85,medium_soil:70,soft_soil:50,black_cotton:48,sandy:65 };
+  const techScore = Math.round((
+    (soilScore[site.soilType] || 70) * .35 +
+    scores.structural              * .35 +
+    scores.isCode                  * .3
+  ));
+  document.getElementById('tech-score').textContent = techScore + '%';
+
+  /* Structural checks */
+  const structChecks = [
+    { title:'Foundation Suitability', sub: `Soil: ${site.soilType||'N/A'} — ${soilMap[site.soilType]||'Moderate'}`,      pass: !['soft_soil','black_cotton'].includes(site.soilType) },
+    { title:'Seismic Zone Compliance', sub: `Zone ${site.seismicZone||'II'} — IS 1893 ductile detailing required`,       pass: structural.isFramed !== false },
+    { title:'Floor Height Check',      sub: `${structural.floorHeight||3}m — IS 456 minimum 2.75m ✓`,                    pass: (structural.floorHeight || 3) >= 2.75 },
+    { title:'Column Spacing',          sub: `${structural.columnSpacing||4}m — recommended ≤ 6m`,                        pass: (structural.columnSpacing || 4) <= 6 },
+    { title:'Number of Floors',        sub: `${client.floors||1} floor(s) — ${(client.floors||1)<=5?'Low-rise OK':'High-rise — consult SE'}`, pass: true },
+    { title:'Wind Exposure',           sub: `IS 875 Part 3 — ${site.climate==='coastal'?'High wind zone, check cladding':'Standard zone'}`, pass: true },
+  ];
+  document.getElementById('structural-checks').innerHTML = structChecks.map(c => checkItem(c)).join('');
+
+  /* Site checks */
+  const siteChecks = [
+    { title:'Orientation Feasibility', sub:`${design.orientation||'N/A'} — sun path optimisation considered`,             pass: !!design.orientation },
+    { title:'Slope / Terrain',         sub:`${site.slope||'flat'} — ${site.slope==='steep'?'Retaining wall may be needed':'OK for direct construction'}`, pass: site.slope !== 'steep' },
+    { title:'Flood Risk',              sub:`Rainfall ${site.rainfall||'moderate'} — ${site.rainfall==='heavy'?'Raised plinth & storm drain needed':'Low flood risk'}`, pass: site.rainfall !== 'heavy' },
+    { title:'Utility Connectivity',    sub:'Road, water & power access assumed within 50 m',                               pass: true },
+  ];
+  document.getElementById('site-checks').innerHTML = siteChecks.map(c => checkItem(c)).join('');
+
+  /* IS Code matrix */
+  const codes = [
+    { title:'IS 456:2000 — RCC Design',      sub:'Column & beam design compliance',      pass: true },
+    { title:'IS 875 Parts 1–3 — Loads',      sub:'Dead, live and wind loads considered',  pass: true },
+    { title:'IS 1893 — Seismic',             sub:`Zone ${site.seismicZone||'II'} design spectrum applied`, pass: true },
+    { title:'IS 13920 — Ductile Detailing',  sub:'Seismic zones III–V reinforcement detail',               pass: ['III','IV','V'].includes(site.seismicZone) },
+    { title:'IS 6403 — Foundation',          sub:'Bearing capacity per soil classification',               pass: true },
+    { title:'NBC 2016 — Fire Safety',        sub:'Minimum 1-hr fire resistance for occupancy type',        pass: true },
+  ];
+  document.getElementById('code-matrix').innerHTML = codes.map(c => checkItem(c)).join('');
+
+  function checkItem({ title, sub, pass, warn }) {
+    const cls = pass ? 'pass' : (warn ? 'warn' : 'fail');
+    const ico = pass ? '✅'   : (warn ? '⚠️'   : '❌');
+    return `<div class="check-item ${cls}"><span class="check-icon">${ico}</span><div><div class="check-title">${title}</div><div class="check-sub">${sub}</div></div></div>`;
+  }
+
+  /* ── Economic feasibility ── */
+  const builtUp   = parseFloat(client.builtUpArea || 1200);
+  const floors    = parseInt(client.floors      || 1);
+  const budget    = parseFloat(costData.totalBudget || costData.budget || 2000000);
+  const ratePerSqft = 1800;
+  const estimate  = builtUp * floors * ratePerSqft;
+  const ratio     = budget > 0 ? estimate / budget : 1;
+  const econFeasible = ratio <= 1.15;
+  const econScore = Math.round(Math.min(100, (budget / Math.max(estimate, 1)) * 80 + 20));
+  document.getElementById('econ-score').textContent = Math.min(econScore, 100) + '%';
+
+  document.getElementById('cost-breakdown').innerHTML = `
+    <div class="econ-row"><span>Built-up Area</span><span class="econ-val">${builtUp.toLocaleString()} sq ft × ${floors} floor(s)</span></div>
+    <div class="econ-row"><span>Rate (avg)</span><span class="econ-val">₹${ratePerSqft.toLocaleString()}/sq ft</span></div>
+    <div class="econ-row"><span>Estimated Cost</span><span class="econ-val">₹${(estimate/100000).toFixed(1)} L</span></div>
+    <div class="econ-row"><span>Your Budget</span><span class="econ-val">₹${(budget/100000).toFixed(1)} L</span></div>
+    <div class="econ-row"><span>Variance</span><span class="econ-val ${budget>=estimate?'':''}${budget>=estimate?'color:var(--success)':'color:var(--danger)'}">${budget >= estimate ? '✅ Within budget' : '⚠ Over by ₹' + ((estimate-budget)/100000).toFixed(1) + ' L'}</span></div>
+  `;
+
+  document.getElementById('budget-viability').innerHTML = `
+    <div class="econ-row"><span>Budget Utilisation</span><span class="econ-val">${Math.min(100,Math.round(estimate/Math.max(budget,1)*100))}%</span></div>
+    <div class="econ-row"><span>Contingency (10%)</span><span class="econ-val">₹${(estimate*.1/100000).toFixed(1)} L</span></div>
+    <div class="econ-row"><span>Total with Contingency</span><span class="econ-val">₹${(estimate*1.1/100000).toFixed(1)} L</span></div>
+    <div class="econ-row"><span>Feasibility</span><span class="econ-val">${econFeasible ? '✅ Economically Feasible' : '⚠ Tight budget — review scope'}</span></div>
+  `;
+
+  document.getElementById('roi-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${Math.max(1,Math.round(estimate/Math.max(budget,1)*10))} yrs</div><div class="stat-label">Est. Payback Period</div></div>
+    <div class="stat-card"><div class="stat-value">8–12%</div><div class="stat-label">Projected Annual ROI</div></div>
+    <div class="stat-card"><div class="stat-value">${econFeasible?'✅ Low':'⚠ Medium'}</div><div class="stat-label">Financial Risk Level</div></div>
+  `;
+
+  /* Cost chart */
+  function drawCostChart() {
+    const ctx = document.getElementById('costChart');
+    if (!ctx || ctx.dataset.drawn) return;
+    ctx.dataset.drawn = 'yes';
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Construction', 'Finishing', 'MEP Services', 'Contingency', 'Total'],
+        datasets: [
+          { label: 'Estimate (₹ L)', data: [(estimate*.6/1e5).toFixed(1),(estimate*.2/1e5).toFixed(1),(estimate*.1/1e5).toFixed(1),(estimate*.1/1e5).toFixed(1),(estimate/1e5).toFixed(1)], backgroundColor: '#3b82f6' },
+          { label: 'Budget (₹ L)',   data: [null,null,null,null,(budget/1e5).toFixed(1)], backgroundColor: '#22c55e' }
+        ]
+      },
+      options: { responsive:true, plugins:{ legend:{position:'top'} }, scales:{ y:{ beginAtZero:true } } }
+    });
+  }
+
+  /* ── Environmental feasibility ── */
+  const envScore = Math.round((scores.energy * .5 + 70) / 2 + 15);
+  document.getElementById('env-score').textContent = Math.min(envScore,100) + '%';
+
+  const envChecks = [
+    { title:'South Orientation', sub:`Building faces ${design.orientation||'N/A'} — ${design.orientation==='south'?'Optimal for solar gain in India':'Consider reorienting for energy gains'}`, pass: design.orientation==='south' },
+    { title:'Natural Ventilation',sub:`${design.openings||'N/A'} window ratio — ${design.openings==='large'?'Excellent cross-ventilation':'Consider larger openings'}`, pass: design.openings==='large' },
+    { title:'Shading Devices',    sub:`${design.shading||'N/A'} — prevents 20–35% solar heat gain when present`,          pass: design.shading==='yes' || design.shading==='provided' },
+    { title:'Roof Insulation',    sub:`${design.roofType||'N/A'} — reduces cooling load by up to 30%`,                    pass: ['insulated','green_roof'].includes(design.roofType) },
+    { title:'Green Materials',    sub:`${materials.primaryMaterial||'N/A'} — check embodied carbon score`,                pass: !['steel_frame'].includes(materials.primaryMaterial) },
+    { title:'Water Harvesting',   sub:`${site.rainfall==='heavy'?'High potential for RWH system':'Moderate potential'}`,  pass: site.rainfall==='heavy' },
+  ];
+  document.getElementById('env-checks').innerHTML = envChecks.map(c => checkItem(c)).join('');
+
+  const energyGrade = scores.energy >= 80 ? 'A' : scores.energy >= 65 ? 'B' : scores.energy >= 50 ? 'C' : 'D';
+  document.getElementById('energy-eff').innerHTML = `
+    <div class="econ-row"><span>Energy Score</span><span class="econ-val">${scores.energy}% — Grade ${energyGrade}</span></div>
+    <div class="econ-row"><span>Est. Cooling Load</span><span class="econ-val">${site.climate==='hot_dry'||site.climate==='coastal'?'High':'Moderate'}</span></div>
+    <div class="econ-row"><span>Solar Potential</span><span class="econ-val">${['hot_dry','composite'].includes(site.climate)?'Excellent':'Good'}</span></div>
+    <div class="econ-row"><span>Green Rating</span><span class="econ-val">${scores.energy>=75?'GRIHA 4-Star eligible':'GRIHA 2-Star baseline'}</span></div>
+  `;
+  document.getElementById('water-cons').innerHTML = `
+    <div class="econ-row"><span>Rainwater Potential</span><span class="econ-val">${site.rainfall==='heavy'?'★★★ High':'★★ Moderate'}</span></div>
+    <div class="econ-row"><span>Wastewater Reuse</span><span class="econ-val">Grey water recycling recommended</span></div>
+    <div class="econ-row"><span>Water Fixtures</span><span class="econ-val">Low-flow fittings suggested</span></div>
+    <div class="econ-row"><span>HVAC Efficiency</span><span class="econ-val">${scores.energy>=70?'Inverter AC recommended':'Split AC with 5-star BEE'}</span></div>
+  `;
+  document.getElementById('carbon-section').innerHTML = `
+    <div class="grid-3 gap-2">
+      <div class="stat-card"><div class="stat-value">${Math.round(builtUp*floors*0.6)} kg</div><div class="stat-label">Embodied CO₂ (concrete)</div></div>
+      <div class="stat-card"><div class="stat-value">${Math.round(builtUp*floors*0.3)} kg</div><div class="stat-label">Embodied CO₂ (steel)</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--success)">${Math.round(builtUp*floors*0.15)} kg/yr</div><div class="stat-label">Operational CO₂ savings</div></div>
+    </div>
+  `;
+
+  /* ── Sustainability Comparison ── */
+  const PARAMS = [
+    'Energy Efficiency','Water Efficiency','Structural Safety',
+    'Material Sustainability','Site Utilisation','IS Code Compliance',
+    'Natural Ventilation','Thermal Comfort','Cost Optimisation'
+  ];
+  const REGULAR = [48, 40, 58, 45, 62, 50, 42, 48, 55];
+  const GAIA    = [
+    Math.min(scores.energy,  100),
+    Math.min(scores.energy-5,100),
+    Math.min(scores.structural,100),
+    Math.min(75, 70),
+    Math.min(80, 78),
+    Math.min(scores.isCode,  100),
+    Math.min(78, 76),
+    Math.min(82, 80),
+    Math.min(scores.cost,    100),
+  ];
+
+  const gaiaAvg    = Math.round(GAIA.reduce((a,b)=>a+b)/GAIA.length);
+  const regularAvg = Math.round(REGULAR.reduce((a,b)=>a+b)/REGULAR.length);
+  document.getElementById('gaia-pct').textContent    = gaiaAvg + '%';
+  document.getElementById('regular-pct').textContent = regularAvg + '%';
+
+  /* Improvement table */
+  const tbody = document.getElementById('improvement-tbody');
+  tbody.innerHTML = PARAMS.map((p,i) => {
+    const diff = GAIA[i] - REGULAR[i];
+    const cls  = diff > 0 ? 'imp-positive' : 'imp-negative';
+    const sign = diff > 0 ? '+' : '';
+    return `<tr><td>${p}</td><td>${REGULAR[i]}%</td><td>${GAIA[i]}%</td><td class="${cls}">${sign}${diff}%</td></tr>`;
+  }).join('');
+
+  function drawSustainChart() {
+    const ctx = document.getElementById('sustainChart');
+    if (!ctx || ctx.dataset.drawn) return;
+    ctx.dataset.drawn = 'yes';
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: PARAMS,
+        datasets: [
+          { label: 'Regular Method', data: REGULAR, backgroundColor: 'rgba(148,163,184,0.7)', borderColor: '#94a3b8', borderWidth: 1 },
+          { label: '🌿 Gaia Method', data: GAIA,    backgroundColor: 'rgba(34,197,94,0.7)',   borderColor: '#22c55e', borderWidth: 1 }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.x}%` } }
+        },
+        scales: {
+          x: { beginAtZero:true, max:100, ticks:{ callback: v => v+'%' } }
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>

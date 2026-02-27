@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Structural Safety — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a> <span>›</span>
+        <a href="material-selection.html">Materials</a> <span>›</span>
+        <span>Step 5 — Structural Safety</span>
+      </div>
+      <h1>🧱 Structural Safety Analysis</h1>
+      <p>Enter structural parameters. Gaia will recommend foundation type, column sizes, and check IS Code compliance — including seismic and wind load considerations.</p>
+    </div>
+
+    <div class="grid-2 gap-3">
+      <!-- FORM -->
+      <div>
+        <div class="card">
+          <div class="card-header"><span class="card-icon">📋</span><h3>Structural Parameters</h3></div>
+          <div class="card-body">
+            <form id="structForm">
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Soil Type <span class="req">*</span></label>
+                  <select class="form-control" id="soilType" required>
+                    <option value="">— Select —</option>
+                    <option value="rock">Hard Rock</option>
+                    <option value="hard_clay">Hard Clay / Gravel</option>
+                    <option value="medium_clay">Medium Clay</option>
+                    <option value="soft_clay">Soft Clay</option>
+                    <option value="loose_sand">Loose Sand</option>
+                    <option value="filled">Filled / Made-up Ground</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Safe Bearing Capacity (kN/m²)</label>
+                  <input type="number" class="form-control" id="sbc" placeholder="e.g. 150" min="20" max="2000" />
+                  <div class="form-hint">From soil report; typical: rock 900+, hard clay 150–300, soft clay 50–100</div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Number of Floors <span class="req">*</span></label>
+                  <input type="number" class="form-control" id="floors" value="2" min="1" max="20" required />
+                </div>
+                <div class="form-group">
+                  <label>Column Spacing (m)</label>
+                  <input type="number" class="form-control" id="colSpacing" value="4" min="2" max="12" step="0.5" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Seismic Zone <span class="req">*</span></label>
+                  <select class="form-control" id="seismicZone" required>
+                    <option value="2">Zone II — Low (Delhi plains, parts of UP)</option>
+                    <option value="3" selected>Zone III — Moderate (Bangalore, Mumbai)</option>
+                    <option value="4">Zone IV — High (Delhi, J&K foothills)</option>
+                    <option value="5">Zone V — Very High (NE India, Andaman)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Plan Shape</label>
+                  <select class="form-control" id="planShape">
+                    <option value="Rectangle">Rectangle (regular)</option>
+                    <option value="Square">Square</option>
+                    <option value="L">L-Shape</option>
+                    <option value="T">T-Shape</option>
+                    <option value="U">U-Shape</option>
+                    <option value="Plus">Plus (+) Shape</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Slab Type</label>
+                  <select class="form-control" id="slabType">
+                    <option value="two_way">Two-way slab (standard)</option>
+                    <option value="one_way">One-way slab</option>
+                    <option value="flat">Flat slab (no beams)</option>
+                    <option value="waffle">Waffle slab</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Ground Water Level</label>
+                  <select class="form-control" id="gwl">
+                    <option value="deep">Deep (> 3 m below GL)</option>
+                    <option value="moderate">Moderate (1.5–3 m)</option>
+                    <option value="shallow">Shallow (< 1.5 m)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Open Ground Floor (Stilt)?</label>
+                  <select class="form-control" id="openGround">
+                    <option value="no">No — walls at ground floor</option>
+                    <option value="yes">Yes — open pillars only (stilt)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Future Expansion Columns?</label>
+                  <select class="form-control" id="expansionCols">
+                    <option value="no">Not provided</option>
+                    <option value="yes">Yes — columns extended</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Fire Egress (for > G+3)</label>
+                <select class="form-control" id="fireEgress">
+                  <option value="no">Not planned</option>
+                  <option value="yes">Yes — fire staircase + hydrant</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg mt-2">
+                🔍 Analyse Structural Safety
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div id="structOutput">
+        <div class="card">
+          <div class="card-body">
+            <div class="empty-state">
+              <div class="eicon">🧱</div>
+              <h3>Structural Analysis</h3>
+              <p>Fill the form and click <strong>Analyse</strong> to get foundation type, column sizes, and IS code compliance checks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <a href="material-selection.html" class="btn btn-outline">← Material Selection</a>
+      <span class="step-nav-info">Step 5 of 8</span>
+      <a href="cost-planning.html" class="btn btn-primary">Next: Cost Planning →</a>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('structural');
+
+  // Pre-fill
+  const ex = load('structural');
+  const clientData = load('client') || {};
+  const siteData   = load('site')   || {};
+
+  // Auto-fill from client/site data
+  if (!ex) {
+    if (clientData.floors) document.getElementById('floors').value = clientData.floors;
+    if (siteData.soilType) document.getElementById('soilType').value = siteData.soilType;
+  }
+
+  if (ex) {
+    ['soilType','sbc','floors','colSpacing','seismicZone','planShape','slabType',
+     'gwl','openGround','expansionCols','fireEgress'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && ex[id] !== undefined) el.value = ex[id];
+    });
+    renderStructOutput(ex);
+  }
+
+  document.getElementById('structForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = {
+      soilType:        document.getElementById('soilType').value,
+      sbc:             parseFloat(document.getElementById('sbc').value) || 0,
+      floors:          parseInt(document.getElementById('floors').value) || 1,
+      colSpacing:      parseFloat(document.getElementById('colSpacing').value) || 4,
+      seismicZone:     parseInt(document.getElementById('seismicZone').value) || 3,
+      planShape:       document.getElementById('planShape').value,
+      slabType:        document.getElementById('slabType').value,
+      gwl:             document.getElementById('gwl').value,
+      openGroundFloor: document.getElementById('openGround').value === 'yes',
+      expansionColumns:document.getElementById('expansionCols').value === 'yes',
+      fireEgress:      document.getElementById('fireEgress').value === 'yes',
+    };
+    save('structural', data);
+    markDone('structural');
+    renderStructOutput(data);
+    document.getElementById('structOutput').scrollIntoView({ behavior:'smooth' });
+  });
+
+  function renderStructOutput(d) {
+    const foundation = getFoundationRec(d.soilType, d.floors, d.seismicZone);
+    const column     = getColumnRec(d.floors, d.colSpacing);
+
+    // Load calculations (simplified)
+    const deadLoad  = 3.5 + (d.floors * 0.5);   // kN/m²
+    const liveLoad  = d.buildingType === 'office' ? 4.0 : 2.0; // kN/m²
+    const windLoad  = siteData.windSpeed === 'high' ? 2.5 : 1.5; // kN/m²
+    const seismicAh = [0, 0, 0.10, 0.16, 0.24, 0.36][d.seismicZone] || 0.16;
+
+    // Risks
+    const risks = [];
+    if (['loose_sand','filled','soft_clay'].includes(d.soilType) && d.floors >= 2) {
+      risks.push({ type:'danger', title:'Differential Settlement Risk', desc:`${d.soilType.replace('_',' ')} soil + ${d.floors} floors → raft/pile foundation essential (IS 6403).` });
+    }
+    if (d.seismicZone >= 4) {
+      risks.push({ type:'danger', title:`Seismic Zone ${d.seismicZone} Risk`, desc:'Ductile detailing mandatory per IS 13920. Shear walls recommended.' });
+    }
+    if (['L','T','U','Plus'].includes(d.planShape) && d.seismicZone >= 3) {
+      risks.push({ type:'warning', title:'Torsional Irregularity', desc:`${d.planShape}-shape in Zone ${d.seismicZone}: add seismic joints or symmetric shear walls.` });
+    }
+    if (d.openGroundFloor && d.floors > 2) {
+      risks.push({ type:'danger', title:'Soft Storey Risk', desc:'Open stilt floor is highly vulnerable in seismic events. Add infill or bracing per IS 13920.' });
+    }
+    if (d.gwl === 'shallow') {
+      risks.push({ type:'warning', title:'Shallow Ground Water Risk', desc:'GWL < 1.5 m: use waterproof concrete (M30+, w/c < 0.45). Anti-uplift design needed for basement.' });
+    }
+    if (d.slabType === 'flat' && d.floors > 3) {
+      risks.push({ type:'warning', title:'Punching Shear Risk (Flat Slab)', desc:'Provide column drop panels (min 300 mm) or headed shear studs per IS 456 Cl. 31.' });
+    }
+    if (d.floors > 4 && !d.fireEgress) {
+      risks.push({ type:'warning', title:'Fire Safety Gap', desc:'Buildings > G+3 need dedicated fire staircase + wet riser per NBC Part 4.' });
+    }
+    if (risks.length === 0) {
+      risks.push({ type:'success', title:'Structure Appears Safe', desc:'No major structural risks detected. Verify with licensed structural engineer before construction.' });
+    }
+
+    // Safety score
+    let score = 100;
+    risks.forEach(r => {
+      if (r.type === 'danger')  score -= 20;
+      if (r.type === 'warning') score -= 10;
+    });
+    score = Math.max(0, score);
+    const scoreCls = score >= 75 ? 'sc-high' : score >= 50 ? 'sc-medium' : 'sc-low';
+    const scoreDeg = (score / 100 * 360).toFixed(0) + 'deg';
+
+    document.getElementById('structOutput').innerHTML = `
+      <div class="card mb-3 fade-in">
+        <div class="card-header"><span class="card-icon">🏗</span><h3>Foundation Recommendation</h3></div>
+        <div class="card-body">
+          <div class="result-box mb-3">
+            <h4>✅ Recommended Foundation</h4>
+            <div class="output-row"><span class="output-key">Foundation Type</span><span class="output-val">${foundation.type}</span></div>
+            <div class="output-row"><span class="output-key">Minimum Depth</span><span class="output-val">${foundation.minDepth} below GL</span></div>
+            <div class="output-row"><span class="output-key">IS Code</span><span class="output-val"><span class="is-tag">${foundation.code}</span></span></div>
+          </div>
+          <div class="result-box" style="background:var(--info-bg);border-color:var(--info-border);">
+            <h4 style="color:var(--info);"> Column / Beam Sizes</h4>
+            <div class="output-row"><span class="output-key">Column Size</span><span class="output-val">${column.size}</span></div>
+            <div class="output-row"><span class="output-key">Concrete Grade</span><span class="output-val">${column.grade} <span class="is-tag">IS 456</span></span></div>
+            <div class="output-row"><span class="output-key">Steel Grade</span><span class="output-val">${column.steel} <span class="is-tag">IS 1786</span></span></div>
+            <div class="output-row"><span class="output-key">Min Reinforcement</span><span class="output-val">${column.minRatio} of gross area</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 fade-in">
+        <div class="card-header"><span class="card-icon">📊</span><h3>Load Summary</h3></div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Load Type</th><th>Value</th><th>IS Code</th></tr></thead>
+              <tbody>
+                <tr><td>Dead Load</td><td>${deadLoad.toFixed(1)} kN/m²</td><td><span class="is-tag">IS 875-1</span></td></tr>
+                <tr><td>Live Load</td><td>${liveLoad.toFixed(1)} kN/m²</td><td><span class="is-tag">IS 875-2</span></td></tr>
+                <tr><td>Wind Load</td><td>${windLoad.toFixed(1)} kN/m²</td><td><span class="is-tag">IS 875-3</span></td></tr>
+                <tr><td>Seismic (Ah)</td><td>${seismicAh.toFixed(2)} g</td><td><span class="is-tag">IS 1893-1</span></td></tr>
+                <tr><td>Ductile Detailing</td><td>${d.seismicZone >= 3 ? 'Required' : 'Optional'}</td><td><span class="is-tag">IS 13920</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 fade-in">
+        <div class="card-header"><span class="card-icon">⚠</span><h3>Structural Risk Assessment</h3></div>
+        <div class="card-body">
+          <div class="flex-between mb-3">
+            <div>
+              <h4 class="text-sm fw-bold mb-1">Structural Safety Score</h4>
+              <p class="text-xs">Based on soil, seismic zone & plan irregularity</p>
+            </div>
+            <div class="score-circle ${scoreCls}" style="--deg:${scoreDeg}"><span>${score}</span></div>
+          </div>
+          ${risks.map(r => `
+          <div class="alert alert-${r.type} mb-2">
+            <span class="alert-icon">${r.type === 'danger' ? '🔴' : r.type === 'warning' ? '🟡' : '✅'}</span>
+            <div class="alert-body"><h4>${r.title}</h4><p>${r.desc}</p></div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card fade-in">
+        <div class="card-header"><span class="card-icon">💡</span><h3>Structural Suggestions</h3></div>
+        <div class="card-body">
+          ${d.seismicZone >= 4 ? `<div class="suggestion-item"><div class="s-icon">🔩</div><div class="s-text"><h4>Ductile detailing per IS 13920</h4><p>135° stirrup hooks, closed ties at beam-column joints, close stirrup spacing in plastic hinge zones.</p></div></div>` : ''}
+          ${['loose_sand','filled','soft_clay'].includes(d.soilType) ? `<div class="suggestion-item"><div class="s-icon">🏗</div><div class="s-text"><h4>Raft foundation + tie beams</h4><p>Raft distributes column loads uniformly on weak soil. Provide 300 mm × 500 mm tie beams at plinth level.</p></div></div>` : ''}
+          ${d.openGroundFloor ? `<div class="suggestion-item"><div class="s-icon">🏗</div><div class="s-text"><h4>Add RC infill at ground floor</h4><p>Brick infill or 200 mm RC walls at stilt level increases lateral stiffness 3–5×, eliminating soft storey.</p></div></div>` : ''}
+          <div class="suggestion-item"><div class="s-icon">📋</div><div class="s-text"><h4>Get independent structural review</h4><p>Always obtain structural drawings from a licensed structural engineer and get NBC/IS code approval before construction.</p></div></div>
+          <div class="suggestion-item"><div class="s-icon">💡</div><div class="s-text"><h4>Conduct soil investigation</h4><p>At least 2 bore holes per 200 m² plot area to depth of 1.5× expected foundation width (min 3 m).</p></div></div>
+        </div>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>

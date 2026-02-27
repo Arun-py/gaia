@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Material Selection — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a> <span>›</span>
+        <a href="smart-design.html">Smart Design</a> <span>›</span>
+        <span>Step 4 — Material Selection</span>
+      </div>
+      <h1>🌱 Material Selection</h1>
+      <p>Gaia recommends materials based on your climate. Select your preferences — the system will predict maintenance and durability risks.</p>
+    </div>
+
+    <!-- Climate Banner -->
+    <div id="climateBanner"></div>
+
+    <div class="grid-2 gap-3">
+      <!-- Left: Selection Form -->
+      <div>
+        <div class="card mb-3">
+          <div class="card-header"><span class="card-icon">🧱</span><h3>Wall System</h3></div>
+          <div class="card-body">
+            <div class="material-grid" id="wallGrid"></div>
+            <input type="hidden" id="wallType" value="clay_brick" />
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header"><span class="card-icon">🏗</span><h3>Roof Type</h3></div>
+          <div class="card-body">
+            <div class="material-grid" id="roofGrid"></div>
+            <input type="hidden" id="roofType" value="flat_rcc" />
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header"><span class="card-icon">🔩</span><h3>Steel Type</h3></div>
+          <div class="card-body">
+            <div class="material-grid" id="steelGrid"></div>
+            <input type="hidden" id="steelType" value="tmt_fe500" />
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header"><span class="card-icon">🏗</span><h3>Additional Options</h3></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Roof Insulation</label>
+                <select class="form-control" id="roofInsulation">
+                  <option value="no">None</option>
+                  <option value="yes">Yes — EPS/XPS board</option>
+                  <option value="cool_roof">Cool-roof paint</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Exterior Paint / Finish</label>
+                <select class="form-control" id="exteriorFinish">
+                  <option value="cement_paint">Cement-based paint</option>
+                  <option value="acrylic">Acrylic exterior paint</option>
+                  <option value="weathershield">Weathershield (premium)</option>
+                  <option value="texture">Texture finish</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Flooring</label>
+                <select class="form-control" id="flooringType">
+                  <option value="vitrified">Vitrified tiles (600×600)</option>
+                  <option value="kota">Kota stone</option>
+                  <option value="marble">Marble / Granite</option>
+                  <option value="ceramic">Ceramic tiles</option>
+                  <option value="wood">Wooden / Laminate</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Waterproofing System</label>
+                <select class="form-control" id="waterproofing">
+                  <option value="standard">Standard (2-coat cement)</option>
+                  <option value="polymer">Polymer modified</option>
+                  <option value="membrane">Bitumen membrane</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block mt-2" onclick="saveMaterials()">💾 Save Material Selections</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Suggestions & Risks -->
+      <div>
+        <div class="card mb-3" id="climateRecCard">
+          <div class="card-header"><span class="card-icon">📋</span><h3>Climate-Based Recommendations</h3></div>
+          <div class="card-body" id="climateRecBody">
+            <div class="empty-state" style="padding:2rem;">
+              <div class="eicon">🔍</div>
+              <p>Loading climate recommendations…</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3" id="riskCard">
+          <div class="card-header"><span class="card-icon">⚠</span><h3>Material Risk Predictions</h3></div>
+          <div class="card-body" id="riskBody">
+            <p class="text-muted text-sm">Select materials to see risk predictions.</p>
+          </div>
+        </div>
+
+        <div class="card" id="isCodeCard">
+          <div class="card-header"><span class="card-icon">📋</span><h3>IS Code References</h3></div>
+          <div class="card-body">
+            <div class="output-row"><span class="output-key">Concrete</span><span class="output-val"><span class="is-tag">IS 456</span></span></div>
+            <div class="output-row"><span class="output-key">Steel</span><span class="output-val"><span class="is-tag">IS 1786</span> <span class="is-tag">IS 800</span></span></div>
+            <div class="output-row"><span class="output-key">AAC Blocks</span><span class="output-val"><span class="is-tag">IS 2185 Part 3</span></span></div>
+            <div class="output-row"><span class="output-key">Fly-Ash Brick</span><span class="output-val"><span class="is-tag">IS 12894</span></span></div>
+            <div class="output-row"><span class="output-key">Waterproofing</span><span class="output-val"><span class="is-tag">IS 2645</span></span></div>
+            <div class="output-row"><span class="output-key">Thermal Comfort</span><span class="output-val"><span class="is-tag">NBC Part 8</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <a href="smart-design.html" class="btn btn-outline">← Smart Design</a>
+      <span class="step-nav-info">Step 4 of 8</span>
+      <a href="structural-safety.html" class="btn btn-primary">Next: Structural Safety →</a>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('materials');
+
+  const site   = load('site')   || {};
+  const client = load('client') || {};
+  const climate  = site.climate  || 'composite';
+  const rainfall = site.rainfall || 'moderate';
+
+  /* Climate banner */
+  document.getElementById('climateBanner').innerHTML = `
+    <div class="alert alert-info mb-3">
+      <span class="alert-icon">⚠</span>
+      <div class="alert-body">
+        <h4>Detected Climate: <strong>${climateLabel(climate)}</strong> | Rainfall: <strong>${rainfall}</strong></h4>
+        <p>Materials below are pre-sorted for your climate. Recommended items are highlighted.</p>
+      </div>
+    </div>`;
+
+  function climateLabel(c) {
+    return { hot:'Hot & Dry', humid:'Hot & Humid', cold:'Cold', coastal:'Coastal', composite:'Composite' }[c] || c;
+  }
+
+  /* Material data */
+  const walls = [
+    { value:'clay_brick',    icon:'🧱', name:'Clay Brick', desc:'Traditional 230 mm' },
+    { value:'aac_block',     icon:'🟫', name:'AAC Block',  desc:'Lightweight, insulating' },
+    { value:'fly_ash_brick', icon:'🪨', name:'Fly-Ash Brick', desc:'IS 12894, eco-friendly' },
+    { value:'hollow_block',  icon:'⬜', name:'Hollow Block', desc:'Cement, 200 mm cavity' },
+    { value:'insulated',     icon:'🧊', name:'Insulated Wall', desc:'Double wall + cavity' },
+  ];
+  const roofs = [
+    { value:'flat_rcc',  icon:'⬛', name:'Flat RCC',    desc:'IS 456, M20–M25' },
+    { value:'sloped',    icon:'🏗', name:'Sloped Tile', desc:'Clay/Mangalore tiles' },
+    { value:'gi_sheet',  icon:'🔲', name:'GI Sheet',    desc:'Galvanised steel' },
+    { value:'pvc_sheet', icon:'🟧', name:'PVC Roofing', desc:'Lightweight, easy fix' },
+    { value:'green_roof',icon:'🌿', name:'Green Roof',  desc:'Terrace garden insulation' },
+  ];
+  const steels = [
+    { value:'tmt_fe415',            icon:'🔩', name:'TMT Fe 415',   desc:'Standard grade' },
+    { value:'tmt_fe500',            icon:'🔩', name:'TMT Fe 500',   desc:'High strength' },
+    { value:'corrosion_resistant',  icon:'🛡', name:'CRS Steel',    desc:'Coastal/marine use' },
+    { value:'fe500d',               icon:'🔩', name:'TMT Fe 500D',  desc:'Ductile, seismic zone' },
+  ];
+
+  /* Recommended sets by climate */
+  const recs = {
+    hot:      { wall:'aac_block',    roof:'flat_rcc',  steel:'tmt_fe500' },
+    humid:    { wall:'fly_ash_brick',roof:'sloped',    steel:'tmt_fe500' },
+    cold:     { wall:'insulated',    roof:'sloped',    steel:'tmt_fe500' },
+    coastal:  { wall:'fly_ash_brick',roof:'gi_sheet',  steel:'corrosion_resistant' },
+    composite:{ wall:'aac_block',    roof:'flat_rcc',  steel:'tmt_fe500' },
+  };
+  const recommended = recs[climate] || recs['composite'];
+
+  const saved = load('materials') || {};
+  let selected = {
+    wallType:  saved.wallType  || recommended.wall,
+    roofType:  saved.roofType  || recommended.roof,
+    steelType: saved.steelType || recommended.steel,
+  };
+
+  function renderGrid(containerId, items, selectedVal, category) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = items.map(item => {
+      const isRec = Object.values(recommended).includes(item.value);
+      return `
+        <div class="mat-card ${selectedVal === item.value ? 'selected' : ''}"
+             onclick="selectMat('${category}', '${item.value}', this, '${containerId}')">
+          <div class="micon">${item.icon}</div>
+          <h4>${item.name}</h4>
+          <p>${item.desc}</p>
+          ${isRec ? '<span class="badge badge-success" style="margin-top:.3rem;font-size:.65rem;">✓ Recommended</span>' : ''}
+        </div>`;
+    }).join('');
+  }
+
+  renderGrid('wallGrid',  walls,  selected.wallType,  'wallType');
+  renderGrid('roofGrid',  roofs,  selected.roofType,  'roofType');
+  renderGrid('steelGrid', steels, selected.steelType, 'steelType');
+
+  if (saved.roofInsulation)  document.getElementById('roofInsulation').value  = saved.roofInsulation;
+  if (saved.exteriorFinish)  document.getElementById('exteriorFinish').value  = saved.exteriorFinish;
+  if (saved.flooringType)    document.getElementById('flooringType').value    = saved.flooringType;
+  if (saved.waterproofing)   document.getElementById('waterproofing').value   = saved.waterproofing;
+
+  function selectMat(category, value, el, gridId) {
+    selected[category] = value;
+    document.getElementById(gridId).querySelectorAll('.mat-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    updateRisks();
+  }
+
+  // Climate recommendations
+  const matSuggestions = getMaterialSuggestions(climate, rainfall);
+  document.getElementById('climateRecBody').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Recommended Material</th><th>Why</th></tr></thead>
+        <tbody>
+          ${matSuggestions.map(s => `<tr><td><strong>${s.cat}</strong></td><td>${s.item}</td><td>${s.reason}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  function updateRisks() {
+    const risks = [];
+    if (climate === 'coastal' && selected.steelType !== 'corrosion_resistant') {
+      risks.push({ type:'danger', icon:'🔴', title:'Corrosion Risk', desc:'Standard steel in coastal environment will corrode within 10–15 years. Use CRS or epoxy-coated rebar.' });
+    }
+    if (climate === 'cold' && selected.wallType !== 'insulated') {
+      risks.push({ type:'warning', icon:'🟡', title:'Thermal Discomfort', desc:'Non-insulated walls will cause excessive heat loss in cold climate. Heating costs will be very high.' });
+    }
+    if (site.rainfall === 'heavy' && selected.roofType === 'flat_rcc') {
+      risks.push({ type:'danger', icon:'🔴', title:'Water Stagnation Risk', desc:'Flat RCC roof in heavy rain zone will accumulate water and cause seepage through cracks.' });
+    }
+    if (selected.roofType === 'gi_sheet' && climate !== 'coastal') {
+      risks.push({ type:'info', icon:'🔵', title:'High Heat Transmission', desc:'GI sheet roof has very low thermal mass — will get extremely hot in summer. Add insulation board.' });
+    }
+    if (risks.length === 0) {
+      risks.push({ type:'success', icon:'✅', title:'Material Selection Looks Good', desc:'No major material-related risks detected for your climate. Good choices!' });
+    }
+    document.getElementById('riskBody').innerHTML = risks.map(r => `
+      <div class="alert alert-${r.type} mb-2">
+        <span class="alert-icon">${r.icon}</span>
+        <div class="alert-body"><h4>${r.title}</h4><p>${r.desc}</p></div>
+      </div>`).join('');
+  }
+
+  updateRisks();
+
+  function saveMaterials() {
+    const data = {
+      wallType:       selected.wallType,
+      roofType:       selected.roofType,
+      steelType:      selected.steelType,
+      roofInsulation: document.getElementById('roofInsulation').value,
+      exteriorFinish: document.getElementById('exteriorFinish').value,
+      flooringType:   document.getElementById('flooringType').value,
+      waterproofing:  document.getElementById('waterproofing').value,
+    };
+    save('materials', data);
+    markDone('materials');
+    updateRisks();
+    alert('✅ Material selections saved! Proceeding to Structural Safety…');
+    window.location.href = 'structural-safety.html';
+  }
+</script>
+</body>
+</html>

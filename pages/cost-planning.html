@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cost Planning — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a> <span>›</span>
+        <a href="structural-safety.html">Structural Safety</a> <span>›</span>
+        <span>Step 6 — Cost Planning</span>
+      </div>
+      <h1>💰 Cost Planning</h1>
+      <p>Gaia calculates an estimated construction cost based on your area, materials, and finish quality — then compares it to your budget with visual charts.</p>
+    </div>
+
+    <!-- Top Stats Row (populated after calc) -->
+    <div id="statsRow" class="grid-4 mb-3 hidden"></div>
+
+    <div class="grid-2 gap-3">
+      <!-- INPUT -->
+      <div>
+        <div class="card mb-3">
+          <div class="card-header"><span class="card-icon">📋</span><h3>Cost Parameters</h3></div>
+          <div class="card-body">
+            <div id="autofillBanner"></div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Total Built-up Area (sq ft) <span class="req">*</span></label>
+                <input type="number" class="form-control" id="builtupArea" placeholder="1800" min="100" required />
+              </div>
+              <div class="form-group">
+                <label>Client Budget (₹) <span class="req">*</span></label>
+                <input type="number" class="form-control" id="budget" placeholder="2500000" min="0" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Finish Quality</label>
+                <select class="form-control" id="finishQuality">
+                  <option value="basic">Basic (whitewash, ceramic tiles)</option>
+                  <option value="standard" selected>Standard (paint, vitrified tiles)</option>
+                  <option value="premium">Premium (textured, granite)</option>
+                  <option value="luxury">Luxury (imported marble, designer)</option>
+                </select>
+                <div class="form-hint">Base rate: Basic ₹1,200 | Standard ₹1,800 | Premium ₹2,500 | Luxury ₹3,500 /sq ft</div>
+              </div>
+              <div class="form-group">
+                <label>Location Factor</label>
+                <select class="form-control" id="locationFactor">
+                  <option value="0.85">Rural / Small town (−15%)</option>
+                  <option value="1.0" selected>Tier-2 city (standard)</option>
+                  <option value="1.15">Tier-1 city (Delhi, Mumbai, +15%)</option>
+                  <option value="1.25">Metro prime area (+25%)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Foundation Type (Additional Cost)</label>
+                <select class="form-control" id="foundationType">
+                  <option value="1.0">Shallow isolated (standard)</option>
+                  <option value="1.08">Raft foundation (+8%)</option>
+                  <option value="1.18">Pile foundation (+18%)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Contingency %</label>
+                <select class="form-control" id="contingency">
+                  <option value="0.05">5% (tight budget)</option>
+                  <option value="0.10" selected>10% (recommended)</option>
+                  <option value="0.15">15% (buffer)</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg mt-2" onclick="calculateCost()">
+              💰 Calculate Cost Estimate
+            </button>
+          </div>
+        </div>
+
+        <!-- Cost Breakdown Table -->
+        <div class="card hidden" id="breakdownCard">
+          <div class="card-header"><span class="card-icon">📊</span><h3>Cost Breakdown</h3></div>
+          <div class="card-body" id="breakdownBody"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Chart + Alerts -->
+      <div>
+        <div class="card mb-3" id="chartCard">
+          <div class="card-header"><span class="card-icon">📈</span><h3>Budget vs Estimate</h3></div>
+          <div class="card-body">
+            <div class="empty-state" id="chartPlaceholder">
+              <div class="eicon">📈</div>
+              <h3>Cost Chart</h3>
+              <p>Enter your parameters and click Calculate to see the budget comparison chart.</p>
+            </div>
+            <div class="chart-box hidden" id="chartBox">
+              <canvas id="budgetChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3 hidden" id="alertCard">
+          <div class="card-header"><span class="card-icon">⚠</span><h3>Budget Analysis</h3></div>
+          <div class="card-body" id="alertBody"></div>
+        </div>
+
+        <div class="card hidden" id="suggestCard">
+          <div class="card-header"><span class="card-icon">💡</span><h3>Cost Saving Suggestions</h3></div>
+          <div class="card-body" id="suggestBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <a href="structural-safety.html" class="btn btn-outline">← Structural Safety</a>
+      <span class="step-nav-info">Step 6 of 8</span>
+      <a href="dashboard.html" class="btn btn-primary">Next: Dashboard →</a>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('cost');
+  let budgetChartInstance = null;
+
+  /* Auto-fill from previous steps */
+  const clientData = load('client') || {};
+  const matData    = load('materials') || {};
+
+  if (clientData.builtupArea) document.getElementById('builtupArea').value = clientData.builtupArea;
+  if (clientData.budget)      document.getElementById('budget').value      = clientData.budget;
+  if (clientData.finishQuality) document.getElementById('finishQuality').value = clientData.finishQuality;
+
+  const strData = load('structural') || {};
+  if (strData.soilType) {
+    const fm = { rock:'1.0', hard_clay:'1.0', medium_clay:'1.0', soft_clay:'1.08', loose_sand:'1.18', filled:'1.18' };
+    const v  = fm[strData.soilType];
+    if (v) document.getElementById('foundationType').value = v;
+  }
+
+  if (clientData.builtupArea || clientData.budget) {
+    document.getElementById('autofillBanner').innerHTML = `
+      <div class="alert alert-success mb-3">
+        <span class="alert-icon">✅</span>
+        <div class="alert-body">
+          <h4>Auto-filled from previous steps</h4>
+          <p>Budget, area, and finish quality loaded from Client Requirements. You can adjust any value.</p>
+        </div>
+      </div>`;
+  }
+
+  // Restore saved cost data
+  const savedCost = load('cost');
+  if (savedCost) {
+    ['builtupArea','budget','finishQuality','locationFactor','foundationType','contingency'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && savedCost[id] !== undefined) el.value = savedCost[id];
+    });
+    if (savedCost.estimated) displayResults(savedCost);
+  }
+
+  function calculateCost() {
+    const area       = parseFloat(document.getElementById('builtupArea').value) || 0;
+    const budget     = parseFloat(document.getElementById('budget').value) || 0;
+    const finish     = document.getElementById('finishQuality').value;
+    const locFactor  = parseFloat(document.getElementById('locationFactor').value) || 1.0;
+    const fndFactor  = parseFloat(document.getElementById('foundationType').value) || 1.0;
+    const contigPct  = parseFloat(document.getElementById('contingency').value) || 0.10;
+
+    if (!area || !budget) { alert('Please enter built-up area and budget.'); return; }
+
+    const rateMap  = { basic:1200, standard:1800, premium:2500, luxury:3500 };
+    const baseRate = (rateMap[finish] || 1800) * locFactor * fndFactor;
+
+    // Cost components (% of total)
+    const components = [
+      { label:'Structure (RCC + Foundation)',  pct: 0.30 },
+      { label:'Masonry & Brickwork',           pct: 0.12 },
+      { label:'Roofing & Waterproofing',       pct: 0.08 },
+      { label:'Flooring & Tiling',             pct: 0.10 },
+      { label:'Doors & Windows',               pct: 0.08 },
+      { label:'Plumbing & Sanitary',           pct: 0.08 },
+      { label:'Electrical & Wiring',           pct: 0.07 },
+      { label:'Plastering & Painting',         pct: 0.07 },
+      { label:'Woodwork & Modular',            pct: 0.06 },
+      { label:'Miscellaneous / Overheads',     pct: 0.04 },
+    ];
+
+    const baseTotal    = area * baseRate;
+    const contingency  = baseTotal * contigPct;
+    const grandTotal   = baseTotal + contingency;
+    const diff         = grandTotal - budget;
+    const overrun      = diff > 0;
+    const overPct      = budget > 0 ? ((diff / budget) * 100).toFixed(1) : 0;
+
+    const costData = {
+      builtupArea:  area,
+      budget:       budget,
+      finishQuality:finish,
+      locationFactor: locFactor,
+      foundationType: fndFactor,
+      contingency:  contigPct,
+      baseRate:     baseRate,
+      baseTotal:    baseTotal,
+      contingencyAmt: contingency,
+      estimated:    grandTotal,
+      diff:         diff,
+      components,
+    };
+    save('cost', costData);
+    markDone('cost');
+    displayResults(costData);
+  }
+
+  function displayResults(d) {
+    const overrun = d.diff > 0;
+    const fmtINR = n => '₹' + Math.round(n).toLocaleString('en-IN');
+
+    // Stats row
+    document.getElementById('statsRow').classList.remove('hidden');
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card"><div class="stat-icon si-blue">💰</div><div class="stat-info"><h3>${(d.builtupArea || 0).toLocaleString()}</h3><p>Built-up Area (sq ft)</p></div></div>
+      <div class="stat-card"><div class="stat-icon si-yellow">💰</div><div class="stat-info"><h3>${fmtINR(d.budget)}</h3><p>Client Budget</p></div></div>
+      <div class="stat-card"><div class="stat-icon ${overrun ? 'si-red' : 'si-green'}">📊</div><div class="stat-info"><h3>${fmtINR(d.estimated)}</h3><p>Estimated Cost</p></div></div>
+      <div class="stat-card"><div class="stat-icon ${overrun ? 'si-red' : 'si-green'}">${overrun ? '⚠' : '✅'}</div><div class="stat-info"><h3 style="color:${overrun ? 'var(--danger)' : 'var(--success)'};">${overrun ? '+' + fmtINR(d.diff) : fmtINR(-d.diff)}</h3><p>${overrun ? 'Overrun' : 'Under Budget'}</p></div></div>
+    `;
+
+    // Chart
+    document.getElementById('chartPlaceholder').classList.add('hidden');
+    document.getElementById('chartBox').classList.remove('hidden');
+    const ctx = document.getElementById('budgetChart').getContext('2d');
+    if (budgetChartInstance) budgetChartInstance.destroy();
+    budgetChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Your Budget', 'Base Construction', 'Contingency', 'Grand Total'],
+        datasets: [{
+          label: 'Amount (₹)',
+          data: [d.budget, d.baseTotal, d.contingencyAmt, d.estimated],
+          backgroundColor: [
+            '#16a34a88', '#3b82f688', '#f59e0b88',
+            overrun ? '#dc262688' : '#16a34a88'
+          ],
+          borderColor: [
+            '#16a34a', '#3b82f6', '#f59e0b',
+            overrun ? '#dc2626' : '#16a34a'
+          ],
+          borderWidth: 2,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { ticks: { callback: v => '₹' + (v/100000).toFixed(1) + 'L' } }
+        }
+      }
+    });
+
+    // Breakdown table
+    document.getElementById('breakdownCard').classList.remove('hidden');
+    document.getElementById('breakdownBody').innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>% Share</th><th>Estimated Cost</th></tr></thead>
+          <tbody>
+            ${(d.components || []).map(c => `
+              <tr>
+                <td>${c.label}</td>
+                <td>${(c.pct * 100).toFixed(0)}%</td>
+                <td>${fmtINR(d.baseTotal * c.pct)}</td>
+              </tr>`).join('')}
+            <tr style="background:var(--surface-alt);">
+              <td><strong>Contingency (${((d.contingency || 0.1) * 100).toFixed(0)}%)</strong></td>
+              <td>—</td>
+              <td><strong>${fmtINR(d.contingencyAmt)}</strong></td>
+            </tr>
+            <tr style="background:var(--green-pale);">
+              <td><strong>Grand Total</strong></td>
+              <td>100%</td>
+              <td><strong style="color:var(--green)">${fmtINR(d.estimated)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>`;
+
+    // Alert
+    document.getElementById('alertCard').classList.remove('hidden');
+    document.getElementById('alertBody').innerHTML = overrun ? `
+      <div class="alert alert-danger">
+        <span class="alert-icon">🔴</span>
+        <div class="alert-body">
+          <h4>Budget Overrun of ${Math.abs(d.diff / d.budget * 100).toFixed(1)}%</h4>
+          <p>Estimated ${fmtINR(d.estimated)} exceeds your budget ${fmtINR(d.budget)} by <strong>${fmtINR(d.diff)}</strong>.</p>
+        </div>
+      </div>
+      <div class="progress-row mt-2">
+        <div class="progress-label"><span class="lbl">Budget Usage</span><span class="val text-danger">${Math.round(d.estimated/d.budget*100)}%</span></div>
+        <div class="progress-track"><div class="progress-fill fill-red" style="width:100%"></div></div>
+      </div>` : `
+      <div class="alert alert-success">
+        <span class="alert-icon">✅</span>
+        <div class="alert-body">
+          <h4>Within Budget</h4>
+          <p>Estimated cost is ${fmtINR(Math.abs(d.diff))} <strong>below</strong> your budget. Well planned!</p>
+        </div>
+      </div>
+      <div class="progress-row mt-2">
+        <div class="progress-label"><span class="lbl">Budget Used</span><span class="val text-green">${Math.round(d.estimated/d.budget*100)}%</span></div>
+        <div class="progress-track"><div class="progress-fill fill-green" style="width:${Math.min(100,Math.round(d.estimated/d.budget*100))}%"></div></div>
+      </div>`;
+
+    // Suggestions
+    document.getElementById('suggestCard').classList.remove('hidden');
+    const sug = [];
+    if (overrun) {
+      sug.push({ icon:'💡', title:'Reduce total built-up area', desc:'Cutting 10% area (e.g. smaller store/utility rooms) saves ~' + fmtINR(d.baseRate * d.builtupArea * 0.1) });
+      sug.push({ icon:'🧱', title:'Downgrade finish quality', desc:'Switching premium → standard finish typically saves ₹700–800/sq ft = ' + fmtINR(700 * d.builtupArea) });
+      sug.push({ icon:'🏗', title:'Use AAC blocks instead of clay brick', desc:'AAC blocks save ~8% on masonry + plastering cost due to lighter weight and better workability.' });
+    }
+    sug.push({ icon:'📊', title:'Negotiate bulk material purchase', desc:'Buying cement, steel, and aggregate in bulk from dealers saves 10–15% vs retail.' });
+    sug.push({ icon:'💧', title:'Rainwater harvesting reduces utility bills', desc:'₹50,000 one-time RWH system saves ₹8,000–12,000/year on water charges.' });
+    document.getElementById('suggestBody').innerHTML = sug.map(s => `
+      <div class="suggestion-item">
+        <div class="s-icon">${s.icon}</div>
+        <div class="s-text"><h4>${s.title}</h4><p>${s.desc}</p></div>
+      </div>`).join('');
+  }
+</script>
+</body>
+</html>

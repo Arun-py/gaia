@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Requirements — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a>
+        <span>›</span>
+        <a href="site-analysis.html">Site Analysis</a>
+        <span>›</span>
+        <span>Step 2 — Client Requirements</span>
+      </div>
+      <h1>👤 Client Requirements</h1>
+      <p>Define the building's purpose, size, budget, and preferences. Gaia will predict space and budget risks.</p>
+    </div>
+
+    <div class="grid-2 gap-3">
+      <!-- FORM -->
+      <div>
+        <div class="card">
+          <div class="card-header"><span class="card-icon">📋</span><h3>Project Details</h3></div>
+          <div class="card-body">
+            <form id="clientForm">
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Building Type <span class="req">*</span></label>
+                  <select class="form-control" id="buildingType" required>
+                    <option value="">— Select —</option>
+                    <option value="house">🏠 Residential House</option>
+                    <option value="apartment">🏢 Apartment / Flat</option>
+                    <option value="office">🏢 Office Building</option>
+                    <option value="shop">🏪 Shop / Commercial</option>
+                    <option value="school">🏫 School / Institution</option>
+                    <option value="industrial">🏭 Industrial / Warehouse</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Number of Floors <span class="req">*</span></label>
+                  <select class="form-control" id="floorsClient" required>
+                    <option value="1">Ground Floor Only (G)</option>
+                    <option value="2">G+1</option>
+                    <option value="3">G+2</option>
+                    <option value="4">G+3</option>
+                    <option value="5">G+4</option>
+                    <option value="6">G+5</option>
+                    <option value="8">G+7 (High-rise)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Number of Rooms</label>
+                  <input type="number" class="form-control" id="rooms" min="1" max="50" value="4" placeholder="4" />
+                </div>
+                <div class="form-group">
+                  <label>Approximate Plot Area (sq ft)</label>
+                  <input type="number" class="form-control" id="plotArea" min="100" value="1200" placeholder="1200" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Built-up Area Required (sq ft)</label>
+                  <input type="number" class="form-control" id="builtupArea" value="1800" min="200" placeholder="1800" />
+                  <div class="form-hint">Total carpet/covered area across all floors</div>
+                </div>
+                <div class="form-group">
+                  <label>Budget (₹) <span class="req">*</span></label>
+                  <input type="number" class="form-control" id="budget" placeholder="e.g. 2500000" min="0" required />
+                  <div class="form-hint">Enter in Rupees (e.g. 25,00,000 = 2500000)</div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Budget Range</label>
+                  <select class="form-control" id="budgetRange">
+                    <option value="low">Low (Economy finish)</option>
+                    <option value="medium" selected>Medium (Standard finish)</option>
+                    <option value="high">High (Premium finish)</option>
+                    <option value="luxury">Luxury (Imported finish)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Finish Quality</label>
+                  <select class="form-control" id="finishQuality">
+                    <option value="basic">Basic — Whitewash, basic tiles</option>
+                    <option value="standard" selected>Standard — Paint, vitrified tiles</option>
+                    <option value="premium">Premium — Textured paint, granite</option>
+                    <option value="luxury">Luxury — Imported marble, wallpaper</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Parking Required?</label>
+                  <select class="form-control" id="parking">
+                    <option value="none">None</option>
+                    <option value="1">1 Car</option>
+                    <option value="2">2 Cars</option>
+                    <option value="multi">Multiple / Basement Parking</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Future Expansion Planned?</label>
+                  <select class="form-control" id="futureExpansion">
+                    <option value="no">No</option>
+                    <option value="yes">Yes — Vertical addition</option>
+                    <option value="maybe">Maybe in 5–10 years</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Architectural Style</label>
+                  <select class="form-control" id="stylePreference">
+                    <option value="modern">Modern / Contemporary</option>
+                    <option value="traditional">Traditional / Vernacular</option>
+                    <option value="minimal">Minimalist</option>
+                    <option value="tropical">Tropical / Eco</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Special Requirements</label>
+                  <input type="text" class="form-control" id="specialReqs" placeholder="e.g. Terrace garden, lift, basement…" />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg mt-2">
+                💾 Save & Analyse
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div id="clientOutput">
+        <div class="card">
+          <div class="card-body">
+            <div class="empty-state">
+              <div class="eicon">👤</div>
+              <h3>Client Analysis</h3>
+              <p>Fill in your project details and click <strong>Save & Analyse</strong> to see risk predictions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <a href="site-analysis.html" class="btn btn-outline">← Site Analysis</a>
+      <span class="step-nav-info">Step 2 of 8</span>
+      <a href="smart-design.html" class="btn btn-primary">Next: Smart Design →</a>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('client');
+
+  // Pre-fill
+  const ex = load('client');
+  if (ex) {
+    ['buildingType','floorsClient','rooms','plotArea','builtupArea','budget',
+     'budgetRange','finishQuality','parking','futureExpansion','stylePreference','specialReqs']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el && ex[id] !== undefined) el.value = ex[id];
+      });
+    renderOutput(ex);
+  }
+
+  document.getElementById('clientForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = {
+      buildingType:    document.getElementById('buildingType').value,
+      floors:          parseInt(document.getElementById('floorsClient').value) || 1,
+      rooms:           parseInt(document.getElementById('rooms').value) || 1,
+      plotArea:        parseFloat(document.getElementById('plotArea').value) || 0,
+      builtupArea:     parseFloat(document.getElementById('builtupArea').value) || 0,
+      budget:          parseFloat(document.getElementById('budget').value) || 0,
+      budgetRange:     document.getElementById('budgetRange').value,
+      finishQuality:   document.getElementById('finishQuality').value,
+      parking:         document.getElementById('parking').value,
+      futureExpansion: document.getElementById('futureExpansion').value,
+      stylePreference: document.getElementById('stylePreference').value,
+      specialReqs:     document.getElementById('specialReqs').value.trim(),
+    };
+    save('client', data);
+    markDone('client');
+    renderOutput(data);
+    document.getElementById('clientOutput').scrollIntoView({ behavior:'smooth' });
+  });
+
+  function renderOutput(d) {
+    const budgetFmt = d.budget ? '₹' + Math.round(d.budget).toLocaleString('en-IN') : '—';
+    const areaPerRoom = d.rooms && d.builtupArea ? Math.round(d.builtupArea / d.rooms) : 0;
+    const nbcMinRoom = 9.0; // 9 m² NBC minimum
+    const areaPerRoomM2 = areaPerRoom / 10.764;
+    const spaceTight = areaPerRoomM2 < nbcMinRoom && d.rooms > 0;
+
+    // Budget vs estimated (rough)
+    const rateMap = { basic:1200, standard:1800, premium:2500, luxury:3500 };
+    const ratePerSqft = rateMap[d.finishQuality] || 1800;
+    const roughEst = (d.builtupArea || 0) * ratePerSqft;
+    const overBudget = d.budget > 0 && roughEst > d.budget;
+    const overPct = d.budget > 0 ? (((roughEst - d.budget) / d.budget) * 100).toFixed(1) : 0;
+
+    const budgetStatusColor = overBudget ? 'var(--danger)' : roughEst > d.budget * 0.9 ? 'var(--warning)' : 'var(--success)';
+    const budgetBarPct = d.budget > 0 ? Math.min(100, (roughEst / d.budget) * 100).toFixed(0) : 0;
+    const barClass = overBudget ? 'fill-red' : parseFloat(budgetBarPct) > 85 ? 'fill-yellow' : 'fill-green';
+
+    const buildingLabels = {
+      house:'Residential House', apartment:'Apartment', office:'Office Building',
+      shop:'Shop/Commercial', school:'School', industrial:'Industrial'
+    };
+
+    document.getElementById('clientOutput').innerHTML = `
+      <div class="card mb-3 fade-in">
+        <div class="card-header"><span class="card-icon">📊</span><h3>Project Summary</h3></div>
+        <div class="card-body">
+          <div class="output-row"><span class="output-key">Building Type</span><span class="output-val">${buildingLabels[d.buildingType] || d.buildingType}</span></div>
+          <div class="output-row"><span class="output-key">Floors</span><span class="output-val">${d.floors} floor${d.floors > 1 ? 's' : ''}</span></div>
+          <div class="output-row"><span class="output-key">Rooms</span><span class="output-val">${d.rooms}</span></div>
+          <div class="output-row"><span class="output-key">Built-up Area</span><span class="output-val">${d.builtupArea ? d.builtupArea.toLocaleString() + ' sq ft' : '—'}</span></div>
+          <div class="output-row"><span class="output-key">Avg Area/Room</span>
+            <span class="output-val ${spaceTight ? 'text-danger' : 'text-green'}">
+              ${areaPerRoom} sq ft (${areaPerRoomM2.toFixed(1)} m²)
+              ${spaceTight ? ' ⚠ Below NBC min' : ''}
+            </span>
+          </div>
+          <div class="output-row"><span class="output-key">Client Budget</span><span class="output-val">${budgetFmt}</span></div>
+        </div>
+      </div>
+
+      <div class="card mb-3 fade-in">
+        <div class="card-header"><span class="card-icon">💰</span><h3>Budget Indicator</h3></div>
+        <div class="card-body">
+          <div class="progress-row">
+            <div class="progress-label">
+              <span class="lbl">Estimated Cost vs Budget</span>
+              <span class="val" style="color:${budgetStatusColor}">${budgetBarPct}%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill ${barClass}" style="width:${budgetBarPct}%"></div>
+            </div>
+          </div>
+          <div class="output-row"><span class="output-key">Finish Rate Used</span><span class="output-val">₹${ratePerSqft}/sq ft</span></div>
+          <div class="output-row"><span class="output-key">Rough Estimate</span><span class="output-val" style="color:${budgetStatusColor}">₹${Math.round(roughEst).toLocaleString('en-IN')}</span></div>
+          <div class="output-row"><span class="output-key">Your Budget</span><span class="output-val">${budgetFmt}</span></div>
+          ${overBudget ? `
+          <div class="alert alert-danger mt-2">
+            <span class="alert-icon">🔴</span>
+            <div class="alert-body">
+              <h4>Budget Overrun Risk</h4>
+              <p>Estimated cost exceeds budget by <strong>${overPct}%</strong>. Consider reducing area or finish quality.</p>
+            </div>
+          </div>` : `
+          <div class="alert alert-success mt-2">
+            <span class="alert-icon">✅</span>
+            <div class="alert-body">
+              <h4>Budget Looks Feasible</h4>
+              <p>Rough estimate is within budget. Keep 10% contingency for price changes.</p>
+            </div>
+          </div>`}
+        </div>
+      </div>
+
+      <div class="card fade-in">
+        <div class="card-header"><span class="card-icon">⚠</span><h3>Risk Predictions</h3></div>
+        <div class="card-body">
+          ${spaceTight ? `
+          <div class="alert alert-danger">
+            <span class="alert-icon">🔴</span>
+            <div class="alert-body">
+              <h4>Space Shortage Risk</h4>
+              <p>Average ${areaPerRoomM2.toFixed(1)} m² per room is below NBC minimum of 9 m². Rooms will feel cramped.</p>
+            </div>
+          </div>` : ''}
+          ${d.futureExpansion === 'yes' ? `
+          <div class="alert alert-info">
+            <span class="alert-icon">⚠</span>
+            <div class="alert-body">
+              <h4>Expansion Provision Required</h4>
+              <p>Plan expansion columns now — extend rebars to roof slab level for future vertical addition.</p>
+            </div>
+          </div>` : ''}
+          ${d.budgetRange === 'low' && d.rooms > 5 ? `
+          <div class="alert alert-warning">
+            <span class="alert-icon">⚠</span>
+            <div class="alert-body">
+              <h4>Space vs Budget Mismatch</h4>
+              <p>High room count with low budget will result in below-standard room sizes.</p>
+            </div>
+          </div>` : ''}
+          <div class="mt-2">
+            <h4 class="text-sm fw-bold mb-1">💡 Suggestions</h4>
+            ${overBudget ? `<div class="suggestion-item"><div class="s-icon">💰</div><div class="s-text"><h4>Use local & alternative materials</h4><p>Switch from premium to standard finishes to save 25–35% of construction cost.</p></div></div>` : ''}
+            ${spaceTight ? `<div class="suggestion-item"><div class="s-icon">💡</div><div class="s-text"><h4>Use open-plan design</h4><p>Combine living + dining or use folding partitions to optimise space efficiency.</p></div></div>` : ''}
+            ${d.futureExpansion !== 'no' ? `<div class="suggestion-item"><div class="s-icon">🏗</div><div class="s-text"><h4>Provide column provision now</h4><p>Extend columns above roof slab with projecting rebars — avoids costly retrofitting later.</p></div></div>` : ''}
+            <div class="suggestion-item"><div class="s-icon">📊</div><div class="s-text"><h4>Keep 10% contingency buffer</h4><p>Material price escalation of 8–12% is common — always budget ₹${Math.round(d.budget * 0.1).toLocaleString('en-IN')} contingency.</p></div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>

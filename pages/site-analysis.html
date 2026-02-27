@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Analysis — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a>
+        <span>›</span>
+        <span>Step 1 — Site Analysis</span>
+      </div>
+      <h1>🌍 Site Analysis</h1>
+      <p>Enter your site details. Gaia will analyse the environment and suggest the best building orientation, roof type, and foundation — then predict climate risks.</p>
+    </div>
+
+    <div class="grid-2 gap-3">
+      <!-- ── INPUT FORM ── -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📋</span>
+            <h3>Site Information</h3>
+          </div>
+          <div class="card-body">
+            <form id="siteForm">
+
+              <div class="form-group">
+                <label>Location / City <span class="req">*</span></label>
+                <input type="text" class="form-control" id="location" placeholder="e.g. Chennai, Tamil Nadu" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Climate Type <span class="req">*</span></label>
+                  <select class="form-control" id="climate" required>
+                    <option value="">— Select —</option>
+                    <option value="hot">🌞 Hot & Dry</option>
+                    <option value="humid">💧 Hot & Humid</option>
+                    <option value="cold">❄ Cold</option>
+                    <option value="coastal">🌊 Coastal</option>
+                    <option value="composite">🌤 Composite</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Annual Rainfall</label>
+                  <select class="form-control" id="rainfall">
+                    <option value="light">Light (< 500 mm)</option>
+                    <option value="moderate">Moderate (500–1200 mm)</option>
+                    <option value="heavy" selected>Heavy (> 1200 mm)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Sun Direction (Summer)</label>
+                  <select class="form-control" id="sunDirection">
+                    <option value="south">South-facing site</option>
+                    <option value="north">North-facing site</option>
+                    <option value="east">East-facing site</option>
+                    <option value="west">West-facing site</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Prevailing Wind Direction</label>
+                  <select class="form-control" id="windDirection">
+                    <option value="SW">South-West</option>
+                    <option value="NE">North-East</option>
+                    <option value="SE">South-East</option>
+                    <option value="NW">North-West</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Wind Speed Zone</label>
+                  <select class="form-control" id="windSpeed">
+                    <option value="low">Low (< 33 m/s)</option>
+                    <option value="moderate">Moderate (33–44 m/s)</option>
+                    <option value="high">High (> 44 m/s)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Soil Type</label>
+                  <select class="form-control" id="soilType">
+                    <option value="rock">Hard Rock</option>
+                    <option value="hard_clay">Hard Clay</option>
+                    <option value="medium_clay" selected>Medium Clay</option>
+                    <option value="soft_clay">Soft Clay</option>
+                    <option value="loose_sand">Loose Sand</option>
+                    <option value="filled">Filled / Made-up Ground</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>West Window Size</label>
+                  <select class="form-control" id="westWindows">
+                    <option value="none">None</option>
+                    <option value="small">Small (< 10% wall)</option>
+                    <option value="medium">Medium (10–20%)</option>
+                    <option value="large">Large (> 20%)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Road Access</label>
+                  <select class="form-control" id="roadAccess">
+                    <option value="north">North side</option>
+                    <option value="south">South side</option>
+                    <option value="east">East side</option>
+                    <option value="west">West side</option>
+                    <option value="corner">Corner plot</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Site Drainage Slope</label>
+                  <select class="form-control" id="drainageSlope">
+                    <option value="adequate">Adequate (> 1.5%)</option>
+                    <option value="poor">Poor (< 1.5%)</option>
+                    <option value="flat">Flat</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Cross Ventilation Possible?</label>
+                  <select class="form-control" id="crossVentilation">
+                    <option value="yes">Yes — openings on 2+ walls</option>
+                    <option value="no">No — only one side open</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Additional Site Notes</label>
+                <textarea class="form-control" id="siteNotes" rows="2" placeholder="e.g. Near water body, high ground water table, slope…"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg">
+                🔍 Analyse Site
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── OUTPUT ── -->
+      <div id="outputCol">
+        <!-- Placeholder before analysis -->
+        <div class="card" id="emptyState">
+          <div class="card-body">
+            <div class="empty-state">
+              <div class="eicon">🔍</div>
+              <h3>Analysis Results</h3>
+              <p>Fill in the form on the left and click <strong>Analyse Site</strong> to see design recommendations and risk predictions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /grid-2 -->
+
+    <!-- Step Nav -->
+    <div class="step-nav">
+      <a href="../index.html" class="btn btn-outline"> Home</a>
+      <span class="step-nav-info">Step 1 of 8</span>
+      <a href="client-requirements.html" class="btn btn-primary" id="nextBtn">Next: Client Requirements →</a>
+    </div>
+  </main>
+</div><!-- /app-layout -->
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('site');
+
+  /* Pre-fill if data already saved */
+  const existing = load('site');
+  if (existing) {
+    ['location','climate','rainfall','sunDirection','windDirection','windSpeed',
+     'soilType','westWindows','roadAccess','drainageSlope','crossVentilation','siteNotes']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el && existing[id] !== undefined) el.value = existing[id];
+      });
+    showOutput(calcSiteOutputs(existing), existing);
+  }
+
+  document.getElementById('siteForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = {
+      location:        document.getElementById('location').value.trim(),
+      climate:         document.getElementById('climate').value,
+      rainfall:        document.getElementById('rainfall').value,
+      sunDirection:    document.getElementById('sunDirection').value,
+      windDirection:   document.getElementById('windDirection').value,
+      windSpeed:       document.getElementById('windSpeed').value,
+      soilType:        document.getElementById('soilType').value,
+      westWindows:     document.getElementById('westWindows').value,
+      roadAccess:      document.getElementById('roadAccess').value,
+      drainageSlope:   document.getElementById('drainageSlope').value,
+      crossVentilation: document.getElementById('crossVentilation').value,
+      siteNotes:       document.getElementById('siteNotes').value.trim(),
+    };
+    save('site', data);
+    markDone('site');
+
+    const outputs = calcSiteOutputs(data);
+    showOutput(outputs, data);
+    document.getElementById('outputCol').scrollIntoView({ behavior:'smooth' });
+  });
+
+  function riskLevel(cond) {
+    return cond === 'high' ? 'badge-danger' : cond === 'medium' ? 'badge-warning' : 'badge-success';
+  }
+
+  function showOutput(out, data) {
+    // Compute risks
+    const heatRisk      = (data.climate === 'hot' || data.climate === 'humid') && data.westWindows === 'large' ? 'high' : (data.climate === 'hot' ? 'medium' : 'low');
+    const waterRisk     = (data.rainfall === 'heavy' && data.drainageSlope !== 'adequate') ? 'high' : data.rainfall === 'heavy' ? 'medium' : 'low';
+    const windRisk      = data.windSpeed === 'high' ? 'high' : data.windSpeed === 'moderate' ? 'medium' : 'low';
+    const foundationRisk= ['loose_sand','filled','soft_clay'].includes(data.soilType) ? 'high' : data.soilType === 'medium_clay' ? 'medium' : 'low';
+
+    const riskBadge = (level, label) =>
+      `<span class="badge ${riskLevel(level)}">${level === 'high' ? '🔴' : level === 'medium' ? '🟡' : '🟢'} ${label}</span>`;
+
+    // Climate tips
+    const tips = [];
+    if (heatRisk === 'high') tips.push({ icon:'🌿', text:'Add sunshades / chajjas on west-facing windows' });
+    if (heatRisk !== 'low')  tips.push({ icon:'🪟', text:'Reduce west glass area to < 10% of wall' });
+    if (waterRisk !== 'low') tips.push({ icon:'💧', text:'Provide sloped roof + rainwater harvesting system' });
+    if (waterRisk === 'high') tips.push({ icon:'🌊', text:'Improve site drainage slope to > 1.5%' });
+    if (windRisk === 'high') tips.push({ icon:'🏗', text:'Design for high wind load per IS 875 Part 3' });
+    if (foundationRisk === 'high') tips.push({ icon:'🏗', text:`Use raft/pile foundation — IS 6403 / IS 2911` });
+
+    document.getElementById('outputCol').innerHTML = `
+      <div class="card mb-3 fade-in">
+        <div class="card-header">
+          <span class="card-icon">✅</span>
+          <h3>Design Recommendations</h3>
+        </div>
+        <div class="card-body">
+          <div class="result-box">
+            <h4>💡 Based on your site data</h4>
+            <div class="output-row"><span class="output-key">Building Orientation</span><span class="output-val">${out.orientation}</span></div>
+            <div class="output-row"><span class="output-key">Window Strategy</span><span class="output-val">${out.windows}</span></div>
+            <div class="output-row"><span class="output-key">Roof Type</span><span class="output-val">${out.roof}</span></div>
+            <div class="output-row"><span class="output-key">Foundation Suggestion</span><span class="output-val">${out.foundation}</span></div>
+            <div class="output-row">
+              <span class="output-key">Cross Ventilation</span>
+              <span class="output-val">${data.crossVentilation === 'yes' ? '✅ Possible' : '⚠ Limited — plan carefully'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 fade-in">
+        <div class="card-header">
+          <span class="card-icon">⚠</span>
+          <h3>Risk Predictions</h3>
+        </div>
+        <div class="card-body">
+          <div class="output-row"><span class="output-key">🌡 Heat Gain Risk</span>${riskBadge(heatRisk,'Heat Risk')}</div>
+          <div class="output-row"><span class="output-key">💧 Water Logging Risk</span>${riskBadge(waterRisk,'Water Risk')}</div>
+          <div class="output-row"><span class="output-key">💨 Wind Pressure Risk</span>${riskBadge(windRisk,'Wind Risk')}</div>
+          <div class="output-row"><span class="output-key">🏗 Foundation Risk</span>${riskBadge(foundationRisk,'Foundation Risk')}</div>
+          <div class="mt-2 text-xs" style="color:var(--text-muted);">
+            IS Codes referenced:
+            <span class="is-tag">IS 875-1</span>
+            <span class="is-tag">IS 875-2</span>
+            <span class="is-tag">IS 875-3</span>
+            <span class="is-tag">IS 1893-1</span>
+            <span class="is-tag">IS 1904</span>
+            <span class="is-tag">IS 6403</span>
+          </div>
+        </div>
+      </div>
+
+      ${tips.length > 0 ? `
+      <div class="card fade-in">
+        <div class="card-header">
+          <span class="card-icon">💡</span>
+          <h3>Smart Suggestions</h3>
+        </div>
+        <div class="card-body">
+          ${tips.map(t => `
+            <div class="suggestion-item">
+              <div class="s-icon">${t.icon}</div>
+              <div class="s-text"><h4>${t.text}</h4></div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
+    `;
+    document.getElementById('emptyState') && (document.getElementById('emptyState').remove());
+  }
+</script>
+</body>
+</html>

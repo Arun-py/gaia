@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Design — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a> <span>›</span>
+        <a href="client-requirements.html">Client Requirements</a> <span>›</span>
+        <span>Step 3 — Smart Design</span>
+      </div>
+      <h1>📐 Smart Design Combination</h1>
+      <p>Gaia combines your site environment and client requirements to suggest the optimal building layout, ventilation strategy, and water management plan.</p>
+    </div>
+
+    <!-- Data check banner -->
+    <div id="dataBanner"></div>
+
+    <!-- Design Options -->
+    <div class="card mb-3">
+      <div class="card-header"><span class="card-icon">⚙</span><h3>Design Preferences</h3></div>
+      <div class="card-body">
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Courtyard / Inner Open Space</label>
+            <select class="form-control" id="courtyard">
+              <option value="yes">Yes — include central courtyard</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Skylight / Clerestory</label>
+            <select class="form-control" id="skylight">
+              <option value="yes">Yes — include skylights</option>
+              <option value="no" selected>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Rainwater Harvesting</label>
+            <select class="form-control" id="rwh">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Solar Panel Area</label>
+            <select class="form-control" id="solar">
+              <option value="none">None</option>
+              <option value="partial">Partial (hot water only)</option>
+              <option value="full">Full (solar PV rooftop)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Parking Type</label>
+            <select class="form-control" id="parkingType">
+              <option value="open">Open surface</option>
+              <option value="covered">Covered / Carport</option>
+              <option value="basement">Basement parking</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="generateDesign()">✨ Generate Smart Design</button>
+      </div>
+    </div>
+
+    <!-- Output area -->
+    <div id="designOutput">
+      <div class="card">
+        <div class="card-body">
+          <div class="empty-state">
+            <div class="eicon">🔍</div>
+            <h3>Design Analysis</h3>
+            <p>Complete <a href="site-analysis.html" style="color:var(--green)">Site Analysis</a> and <a href="client-requirements.html" style="color:var(--green)">Client Requirements</a> first, then click <strong>Generate Smart Design</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <a href="client-requirements.html" class="btn btn-outline">← Client Requirements</a>
+      <span class="step-nav-info">Step 3 of 8</span>
+      <a href="material-selection.html" class="btn btn-primary">Next: Material Selection →</a>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('design');
+
+  const site   = load('site')   || {};
+  const client = load('client') || {};
+
+  // Data warning
+  const banner = document.getElementById('dataBanner');
+  const missing = [];
+  if (!site.climate)       missing.push('<a href="site-analysis.html" style="color:var(--green)">Site Analysis</a>');
+  if (!client.buildingType) missing.push('<a href="client-requirements.html" style="color:var(--green)">Client Requirements</a>');
+  if (missing.length) {
+    banner.innerHTML = `<div class="alert alert-warning mb-3"><span class="alert-icon">⚠</span><div class="alert-body"><h4>Missing Previous Steps</h4><p>Please complete: ${missing.join(', ')} for best results.</p></div></div>`;
+  }
+
+  // Restore saved preferences
+  const savedDesign = load('design');
+  if (savedDesign) {
+    ['courtyard','skylight','rwh','solar','parkingType'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && savedDesign[id]) el.value = savedDesign[id];
+    });
+    if (savedDesign.generated) showDesign(savedDesign);
+  }
+
+  function generateDesign() {
+    const prefs = {
+      courtyard:   document.getElementById('courtyard').value,
+      skylight:    document.getElementById('skylight').value,
+      rwh:         document.getElementById('rwh').value,
+      solar:       document.getElementById('solar').value,
+      parkingType: document.getElementById('parkingType').value,
+      generated:   true,
+    };
+    save('design', prefs);
+    markDone('design');
+    showDesign(prefs);
+  }
+
+  function showDesign(prefs) {
+    const climate  = site.climate  || 'composite';
+    const rainfall = site.rainfall || 'moderate';
+    const bType    = client.buildingType || 'house';
+    const floors   = client.floors || 1;
+    const rooms    = client.rooms  || 4;
+    const wind     = site.windDirection || 'SW';
+
+    // Room placement strategy
+    const roomMap = {
+      hot: [
+        { room:'Living / Hall',     placement:'North or East — cool morning sun, shaded afternoon' },
+        { room:'Bedrooms',          placement:'South-East — morning sun, afternoon shade' },
+        { room:'Kitchen',           placement:'South or East — quick heat dissipation, cross breeze' },
+        { room:'Bathrooms',         placement:'West or North-West — small window, minimal heat' },
+        { room:'Staircase / Store', placement:'West — acts as buffer against afternoon heat' },
+      ],
+      cold: [
+        { room:'Living / Hall',     placement:'South — maximum passive solar gain in winter' },
+        { room:'Bedrooms',          placement:'South-East — warm morning sun' },
+        { room:'Kitchen',           placement:'East — morning warmth' },
+        { room:'Bathrooms',         placement:'North — insulated, least used' },
+        { room:'Staircase / Store', placement:'North — thermal buffer against cold wind' },
+      ],
+      coastal: [
+        { room:'Living / Hall',     placement:'Toward sea breeze direction — maximum natural cooling' },
+        { room:'Bedrooms',          placement:'Cross-ventilated with sea breeze passage' },
+        { room:'Kitchen',           placement:'Leeward side — no salt spray ingress' },
+        { room:'Bathrooms',         placement:'Leeward — protected from corrosive salt air' },
+        { room:'Staircase',         placement:'Core position — wind buffer' },
+      ],
+    };
+    const placement = roomMap[climate] || roomMap['hot'];
+
+    // Ventilation strategy
+    let ventilation = '';
+    if (prefs.courtyard === 'yes') {
+      ventilation = 'Central courtyard acts as ventilation shaft — draws hot air up and out through stack effect. Windows open inward to courtyard for cool cross-ventilation.';
+    } else if (site.crossVentilation === 'yes') {
+      ventilation = 'Cross-ventilation corridors aligned perpendicular to prevailing ' + wind + ' wind. 40% of wall area as openings on each face provides 6–8 ACH naturally.';
+    } else {
+      ventilation = 'Single-side ventilation — use jalousie/louvre windows and ceiling fans. AC required during peak season. Consider 300 mm x 600 mm high-level ventilators.';
+    }
+
+    // Lighting strategy
+    let lighting = '';
+    if (prefs.skylight === 'yes') {
+      lighting = 'Skylights at core of building for stack lighting — reduces artificial lighting by 60%. Roof skylights 5% of floor area recommended.';
+    } else {
+      lighting = 'North-facing clerestory windows for even diffused daylight. South-facing windows with 45° overhangs. Avoid east-west deep rooms > 6 m wide.';
+    }
+
+    // Water management
+    let water = '';
+    if (prefs.rwh === 'yes') {
+      water = `Rainwater harvesting: First-flush diverter → underground sump (capacity = ${Math.round((client.builtupArea || 1800) * 0.5)} litres) → pump to overhead tank. Reduces water bill 30–40%.`;
+    } else {
+      water = 'Standard overhead tank + underground sump. Slope all outdoor surfaces away from building at 1.5% min.';
+    }
+
+    // Energy
+    let energy = '';
+    if (prefs.solar === 'full') {
+      energy = 'Rooftop solar PV: 1 kWp per 100 sq ft of roof — typical 3 kWp system for residential use. Annual savings ₹15,000–₹25,000.';
+    } else if (prefs.solar === 'partial') {
+      energy = 'Solar water heater (200 LPD): saves 1.5–2 units/day electricity. Payback 3–4 years.';
+    } else {
+      energy = 'No solar planned. Consider solar later — pre-route conduit from roof to electrical panel.';
+    }
+
+    // Risk checks
+    const poorVent    = site.crossVentilation !== 'yes' && prefs.courtyard !== 'yes';
+    const highACDep   = poorVent && (climate === 'hot' || climate === 'humid');
+    const darkInterior= prefs.skylight !== 'yes' && rooms > 6 && floors > 2;
+
+    document.getElementById('designOutput').innerHTML = `
+      <div class="grid-2 gap-3 fade-in">
+
+        <div>
+          <div class="card mb-3">
+            <div class="card-header"><span class="card-icon">🏗</span><h3>Room Placement Strategy</h3></div>
+            <div class="card-body">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Room</th><th>Recommended Placement</th></tr></thead>
+                  <tbody>
+                    ${placement.map(r => `<tr><td><strong>${r.room}</strong></td><td>${r.placement}</td></tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="card-header"><span class="card-icon">💨</span><h3>Ventilation Design</h3></div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:var(--text);line-height:1.7;">${ventilation}</p>
+              ${prefs.courtyard === 'yes' ? '<div class="alert alert-success mt-2"><span class="alert-icon">✅</span><div class="alert-body"><h4>Excellent Choice</h4><p>Courtyard design reduces indoor temperature by 4–6°C naturally.</p></div></div>' : ''}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-icon">☀</span><h3>Natural Lighting</h3></div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:var(--text);line-height:1.7;">${lighting}</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card mb-3">
+            <div class="card-header"><span class="card-icon">💧</span><h3>Water Management</h3></div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:var(--text);line-height:1.7;">${water}</p>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="card-header"><span class="card-icon">⚡</span><h3>Energy Strategy</h3></div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:var(--text);line-height:1.7;">${energy}</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-icon">⚠</span><h3>Design Risk Predictions</h3></div>
+            <div class="card-body">
+              ${highACDep ? `
+              <div class="alert alert-danger">
+                <span class="alert-icon">🔴</span>
+                <div class="alert-body">
+                  <h4>High AC Dependency Risk</h4>
+                  <p>No cross-ventilation in a ${climate} climate means 100% mechanical cooling needed. AC bill will be high.</p>
+                </div>
+              </div>` : `
+              <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                <div class="alert-body">
+                  <h4>Good Ventilation Planned</h4>
+                  <p>Natural ventilation strategy will reduce mechanical cooling load significantly.</p>
+                </div>
+              </div>`}
+
+              ${darkInterior ? `
+              <div class="alert alert-warning">
+                <span class="alert-icon">⚠</span>
+                <div class="alert-body">
+                  <h4>Dark Interior Risk</h4>
+                  <p>Deep multi-floor building without skylights will have dark interior rooms needing artificial light all day.</p>
+                </div>
+              </div>` : ''}
+
+              ${poorVent ? `
+              <div class="alert alert-warning mt-1">
+                <span class="alert-icon">💨</span>
+                <div class="alert-body">
+                  <h4>Poor Natural Ventilation</h4>
+                  <p>Recommend adding a courtyard or aligning windows for cross-ventilation before finalising layout.</p>
+                </div>
+              </div>` : ''}
+
+              <div class="mt-2">
+                <h4 class="text-sm fw-bold mb-2">💡 Smart Suggestions</h4>
+                ${poorVent ? `<div class="suggestion-item"><div class="s-icon">💨</div><div class="s-text"><h4>Add cross-ventilation corridor</h4><p>Align openings on opposite walls; wind pressure drives 6–8 ACH without fans.</p></div></div>` : ''}
+                ${darkInterior ? `<div class="suggestion-item"><div class="s-icon">☀</div><div class="s-text"><h4>Add skylight at staircase core</h4><p>300 x 600 mm skylight brings diffused light to all floors via stairwell.</p></div></div>` : ''}
+                <div class="suggestion-item"><div class="s-icon">🌿</div><div class="s-text"><h4>Use 5 m max room depth</h4><p>Rooms deeper than 2× window height receive poor daylight — keep depth ≤ 5 m.</p></div></div>
+                <div class="suggestion-item"><div class="s-icon">🏗</div><div class="s-text"><h4>Place wet areas (kitchen/bath) together</h4><p>Back-to-back wet areas save 15–20% on plumbing material and labour cost.</p></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>

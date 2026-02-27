@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaia — Smart Building Design System</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { overflow-x: hidden; }
+    @media (max-width: 768px) {
+      .hero-stats { flex-direction: column; gap: 1rem; align-items: center; }
+      .steps-grid { flex-direction: column; align-items: center; }
+      .step-chip  { width: 80%; max-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Loading Screen ── -->
+<div id="gaia-loader">
+  <div class="loader-leaf">
+    <img src="logo.png" alt="Gaia" style="width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;">
+  </div>
+  <div class="loader-word">
+    <span class="loader-letter">G</span>
+    <span class="loader-letter">A</span>
+    <span class="loader-letter">I</span>
+    <span class="loader-letter">A</span>
+  </div>
+  <div class="loader-tagline">Smart Building Design</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<!-- ── Top Navigation ── -->
+<nav class="home-nav">
+  <div class="brand">
+    <div class="logo">
+      <img src="logo.png" alt="Gaia" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+    <h2>Gaia</h2>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#steps">How It Works</a>
+    <a href="pages/dashboard.html">Dashboard</a>
+    <a href="pages/site-analysis.html" style="color:var(--green-light);font-weight:700;">Start Design →</a>
+    <span id="nav-user-area"></span>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <video class="hero-video-bg" autoplay muted loop playsinline>
+    <source src="bg_video.mp4" type="video/mp4"/>
+  </video>
+  <div class="hero-inner fade-in">
+    <div class="hero-badge">🏗 IS Code Compliant · Rule-Based Logic · 9-Step Workflow</div>
+    <h1>Design Buildings <em>Smarter</em>,<br>Before the First Brick</h1>
+    <p>Gaia studies your site environment, client needs, and structural safety — then predicts risks and suggests improvements before construction begins. Saves cost, time, and energy.</p>
+    <div class="hero-btns">
+      <a href="pages/site-analysis.html" class="btn-hero-primary">🚀 Start Your Design</a>
+      <a href="#steps" class="btn-hero-outline">📋 See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><h3>9</h3><p>Design Steps</p></div>
+      <div class="hero-stat"><h3>25+</h3><p>Risk Predictions</p></div>
+      <div class="hero-stat"><h3>15+</h3><p>IS Codes Applied</p></div>
+      <div class="hero-stat"><h3>100%</h3><p>Free to Use</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="section section-light" id="features">
+  <div class="section-header">
+    <h2>What Gaia Does For You</h2>
+    <p>A complete pre-construction design intelligence system — no expertise required.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="f-icon">🌍</div>
+      <h3>Site Environment Study</h3>
+      <p>Analyses climate, sun path, wind, rainfall, and soil to suggest optimal building orientation and layout.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">👤</div>
+      <h3>Client Needs Analysis</h3>
+      <p>Maps building type, rooms, budget, and expansion plans to predict space and cost risks early.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">🔮</div>
+      <h3>Smart Risk Prediction</h3>
+      <p>Rule-based engine flags heat gain, water stagnation, structural failure, and budget overrun risks.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">🧱</div>
+      <h3>IS Code Compliance</h3>
+      <p>All structural suggestions follow IS 456, IS 875, IS 1893, IS 13920, IS 6403 and NBC guidelines.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">💰</div>
+      <h3>Budget Intelligence</h3>
+      <p>Calculates estimated construction cost and compares against your budget with visual alerts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">📊</div>
+      <h3>Live Dashboard</h3>
+      <p>Scores your design across Energy, Cost, Structural Safety, and IS Code Compliance in real-time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">🌱</div>
+      <h3>Climate-Based Materials</h3>
+      <p>Recommends AAC blocks, corrosion-resistant steel, sloped roofs, and more — based on your climate.</p>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">💡</div>
+      <h3>Actionable Suggestions</h3>
+      <p>Every risk comes with a concrete suggestion — from adding sunshades to using raft foundations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Workflow Steps ── -->
+<section class="section section-dark" id="steps">
+  <div class="section-header">
+    <h2>9-Step Design Workflow</h2>
+    <p>Follow each step in order — Gaia connects all your inputs to generate a complete design and feasibility analysis.</p>
+  </div>
+  <div class="steps-grid">
+    <a href="pages/site-analysis.html" class="step-chip">
+      <div class="chip-num">1</div>
+      <div><h4>Site Analysis</h4><p>Climate & environment</p></div>
+    </a>
+    <a href="pages/client-requirements.html" class="step-chip">
+      <div class="chip-num">2</div>
+      <div><h4>Client Needs</h4><p>Rooms, budget, type</p></div>
+    </a>
+    <a href="pages/smart-design.html" class="step-chip">
+      <div class="chip-num">3</div>
+      <div><h4>Smart Design</h4><p>Layout suggestions</p></div>
+    </a>
+    <a href="pages/material-selection.html" class="step-chip">
+      <div class="chip-num">4</div>
+      <div><h4>Materials</h4><p>Climate-based picks</p></div>
+    </a>
+    <a href="pages/structural-safety.html" class="step-chip">
+      <div class="chip-num">5</div>
+      <div><h4>Structural Safety</h4><p>IS code check</p></div>
+    </a>
+    <a href="pages/cost-planning.html" class="step-chip">
+      <div class="chip-num">6</div>
+      <div><h4>Cost Planning</h4><p>Budget vs estimate</p></div>
+    </a>
+    <a href="pages/dashboard.html" class="step-chip">
+      <div class="chip-num">7</div>
+      <div><h4>Dashboard</h4><p>Full risk report</p></div>
+    </a>
+    <a href="pages/feasibility.html" class="step-chip">
+      <div class="chip-num">8</div>
+      <div><h4>Feasibility</h4><p>Full analysis</p></div>
+    </a>
+    <a href="pages/feedback.html" class="step-chip">
+      <div class="chip-num">9</div>
+      <div><h4>Feedback</h4><p>Rate & refine</p></div>
+    </a>
+  </div>
+</section>
+
+<!-- ── Problem / Solution ── -->
+<section class="section section-light">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="grid-2" style="gap:3rem;align-items:center;">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:.5rem;background:var(--danger-bg);border:1px solid var(--danger-border);padding:.3rem .8rem;border-radius:100px;font-size:.75rem;color:var(--danger);font-weight:700;margin-bottom:1rem;">❌ The Problem</div>
+        <h2 style="color:var(--primary);margin-bottom:.75rem;">Buildings Fail Without Proper Pre-Design Study</h2>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:.6rem;">
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">⚠️ <span>Climate ignored → high energy costs</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">⚠️ <span>Poor soil study → settlement and cracks</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">⚠️ <span>Budget overruns discovered after construction</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">⚠️ <span>Seismic safety missed in high-risk zones</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">⚠️ <span>Wrong materials cause rapid deterioration</span></li>
+        </ul>
+      </div>
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:.5rem;background:var(--success-bg);border:1px solid var(--success-border);padding:.3rem .8rem;border-radius:100px;font-size:.75rem;color:var(--success);font-weight:700;margin-bottom:1rem;">✅ Gaia's Solution</div>
+        <h2 style="color:var(--primary);margin-bottom:.75rem;">Predict Problems Before They Happen</h2>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:.6rem;">
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">✅ <span>Climate-responsive design suggestions</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">✅ <span>Soil-based foundation recommendations</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">✅ <span>Budget comparison with cost estimate</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">✅ <span>Seismic zone compliance per IS 1893</span></li>
+          <li style="display:flex;gap:.6rem;font-size:.9rem;color:var(--text-muted);">✅ <span>Material selection matched to climate</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <h2>Ready to Design Smarter?</h2>
+  <p>Start with Step 1 — Site Analysis — and Gaia will guide you through the entire design process.</p>
+  <a href="pages/site-analysis.html" class="btn-hero-primary" style="text-decoration:none;">
+    🚀 Start Site Analysis →
+  </a>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="home-footer">
+  <p>🌍 <strong>Gaia</strong> — Smart IS-Code Compliant Building Design System &nbsp;|&nbsp; Built for Engineers, Students & Architects</p>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/transitions.js"></script>
+<script>
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  // Animate on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('fade-in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.feature-card, .step-chip, .stat-card').forEach(el => observer.observe(el));
+
+  /* ── Loading screen ── */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const loader = document.getElementById('gaia-loader');
+      if (loader) loader.classList.add('hidden');
+    }, 1800);
+  });
+
+  /* ── Nav user display ── */
+  (function() {
+    const raw  = localStorage.getItem('gaia_user');
+    const area = document.getElementById('nav-user-area');
+    if (!area) return;
+    if (raw) {
+      try {
+        const u = JSON.parse(raw);
+        area.innerHTML = `<span class="nav-user-greeting">👋 ${u.name.split(' ')[0]}</span>
+          <a href="login.html" style="font-size:.8rem;color:rgba(255,255,255,.5);margin-left:.5rem;" onclick="localStorage.removeItem('gaia_token');localStorage.removeItem('gaia_user');">Logout</a>`;
+      } catch {}
+    } else {
+      area.innerHTML = `<a href="login.html" class="nav-login-btn">🔑 Login</a>`;
+    }
+  })();
+</script>
+</body>
+</html>

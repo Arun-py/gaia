@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Feedback — Gaia</title>
+
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+
+    .rating-row { display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; }
+
+    .rating-row label { min-width: 160px; font-size:.875rem; font-weight:600; color:var(--text); }
+
+    .rating-row input[type=range] { flex:1; accent-color:var(--green); }
+
+    .rating-row .val-badge {
+
+      min-width: 40px; text-align:center;
+
+      background:var(--green-pale); color:var(--green);
+
+      padding:.2rem .5rem; border-radius:6px;
+
+      font-weight:700; font-size:.9rem;
+
+    }
+
+    .star-row { display:flex; gap:.3rem; margin-bottom:1rem; }
+
+    .star { font-size:1.5rem; cursor:pointer; opacity:.4; transition:opacity .2s; }
+
+    .star.active { opacity:1; }
+
+    .feedback-submitted { display:none; }
+
+  </style>
+
+</head>
+
+<body>
+
+
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+
+
+<div class="app-layout">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+
+
+  <main class="main-content page-in">
+
+    <div class="page-header">
+
+      <div class="breadcrumb">
+
+        <a href="../index.html">🏠 Home</a> <span>›</span>
+
+        <a href="dashboard.html">Dashboard</a> <span>›</span>
+
+        <span>Step 9 — Feedback</span>
+
+      </div>
+
+      <h1>🔄 Feedback & Review</h1>
+
+      <p>Rate your design based on satisfaction, comfort, and usability. Gaia will update suggestions based on your feedback.</p>
+
+    </div>
+
+
+
+    <!-- Summary cards from dashboard scores -->
+
+    <div class="grid-4 mb-3" id="topScores">
+
+      <div class="stat-card"><div class="stat-icon si-green">⚡</div><div class="stat-info"><h3 id="fb-energy">—</h3><p>Energy Score</p></div></div>
+
+      <div class="stat-card"><div class="stat-icon si-yellow">💰</div><div class="stat-info"><h3 id="fb-cost">—</h3><p>Cost Score</p></div></div>
+
+      <div class="stat-card"><div class="stat-icon si-blue">🧱</div><div class="stat-info"><h3 id="fb-structural">—</h3><p>Structural Score</p></div></div>
+
+      <div class="stat-card"><div class="stat-icon si-red">📋</div><div class="stat-info"><h3 id="fb-iscode">—</h3><p>IS Code Score</p></div></div>
+
+    </div>
+
+
+
+    <div class="grid-2 gap-3">
+
+      <!-- Feedback Form -->
+
+      <div class="card" id="feedbackForm">
+
+        <div class="card-header"><span class="card-icon">🔄</span><h3>Rate Your Design Experience</h3></div>
+
+        <div class="card-body">
+
+
+
+          <div class="form-group mb-3">
+
+            <label>Overall Rating</label>
+
+            <div class="star-row" id="starRow">
+
+              <span class="star" data-val="1">★</span>
+
+              <span class="star" data-val="2">★</span>
+
+              <span class="star" data-val="3">★</span>
+
+              <span class="star" data-val="4">★</span>
+
+              <span class="star" data-val="5">★</span>
+
+            </div>
+
+            <input type="hidden" id="overallRating" value="0" />
+
+          </div>
+
+
+
+          <div class="divider"></div>
+
+
+
+          <h4 class="text-sm fw-bold mb-3">Rate each aspect (1 = Poor, 10 = Excellent)</h4>
+
+
+
+          <div class="rating-row">
+
+            <label>🌡 Thermal Comfort</label>
+
+            <input type="range" min="1" max="10" value="7" id="r-thermal" oninput="syncVal('r-thermal','v-thermal')">
+
+            <span class="val-badge" id="v-thermal">7</span>
+
+          </div>
+
+          <div class="rating-row">
+
+            <label>💨 Ventilation Quality</label>
+
+            <input type="range" min="1" max="10" value="7" id="r-ventilation" oninput="syncVal('r-ventilation','v-ventilation')">
+
+            <span class="val-badge" id="v-ventilation">7</span>
+
+          </div>
+
+          <div class="rating-row">
+
+            <label>💰 Budget Satisfaction</label>
+
+            <input type="range" min="1" max="10" value="6" id="r-budget" oninput="syncVal('r-budget','v-budget')">
+
+            <span class="val-badge" id="v-budget">6</span>
+
+          </div>
+
+          <div class="rating-row">
+
+            <label>🧱 Structural Confidence</label>
+
+            <input type="range" min="1" max="10" value="7" id="r-structural" oninput="syncVal('r-structural','v-structural')">
+
+            <span class="val-badge" id="v-structural">7</span>
+
+          </div>
+
+          <div class="rating-row">
+
+            <label>🌿 Eco-Friendliness</label>
+
+            <input type="range" min="1" max="10" value="8" id="r-eco" oninput="syncVal('r-eco','v-eco')">
+
+            <span class="val-badge" id="v-eco">8</span>
+
+          </div>
+
+          <div class="rating-row">
+
+            <label>💡 Design Intelligence</label>
+
+            <input type="range" min="1" max="10" value="8" id="r-design" oninput="syncVal('r-design','v-design')">
+
+            <span class="val-badge" id="v-design">8</span>
+
+          </div>
+
+
+
+          <div class="divider"></div>
+
+
+
+          <div class="form-group">
+
+            <label>What worked well?</label>
+
+            <textarea class="form-control" id="fb-positive" rows="3" placeholder="e.g. The site analysis gave very accurate suggestions for our hot climate…"></textarea>
+
+          </div>
+
+          <div class="form-group">
+
+            <label>What can be improved?</label>
+
+            <textarea class="form-control" id="fb-improve" rows="3" placeholder="e.g. Would like more specific foundation depth calculations…"></textarea>
+
+          </div>
+
+          <div class="form-group">
+
+            <label>Would you recommend Gaia?</label>
+
+            <select class="form-control" id="fb-recommend">
+
+              <option value="yes">Yes — definitely!</option>
+
+              <option value="maybe">Maybe</option>
+
+              <option value="no">No</option>
+
+            </select>
+
+          </div>
+
+
+
+          <button class="btn btn-primary btn-block btn-lg mt-2" onclick="submitFeedback()">
+
+            ✅ Submit Feedback
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- Right Panel -->
+
+      <div>
+
+        <!-- Radar chart of feedback -->
+
+        <div class="card mb-3">
+
+          <div class="card-header"><span class="card-icon">📊</span><h3>Satisfaction Radar</h3></div>
+
+          <div class="card-body">
+
+            <div class="chart-box">
+
+              <canvas id="feedbackRadar"></canvas>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Adaptive suggestions -->
+
+        <div class="card" id="adaptiveSuggest">
+
+          <div class="card-header"><span class="card-icon">📋</span><h3>Adaptive Suggestions</h3></div>
+
+          <div class="card-body">
+
+            <div id="adaptiveContent">
+
+              <p class="text-sm text-muted">Move the sliders to see personalised suggestions update in real-time.</p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Submitted confirmation -->
+
+    <div class="feedback-submitted card mt-3" id="submittedMsg" style="background:var(--success-bg);border:1px solid var(--success-border);">
+
+      <div class="card-body text-center" style="padding:2.5rem;">
+
+        <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+
+        <h2 style="color:var(--success);">Feedback Submitted!</h2>
+
+        <p style="margin:.75rem 0 1.5rem;">Thank you for using Gaia. Your feedback has been recorded and suggestions have been updated.</p>
+
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+
+          <a href="dashboard.html" class="btn btn-primary">📊 View Dashboard</a>
+
+          <a href="../index.html" class="btn btn-outline">🏠 Start New Project</a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="step-nav">
+
+      <a href="dashboard.html" class="btn btn-outline">📊 Dashboard</a>
+
+      <span class="step-nav-info">Step 8 of 8 — Final Step</span>
+
+      <a href="../index.html" class="btn btn-navy">🏠 Back to Home</a>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+
+<script src="../js/storage.js"></script>
+
+<script src="../js/predictions.js"></script>
+
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+
+<script>
+
+  renderNav('feedback');
+
+  markDone('feedback');
+
+
+
+  /* Load scores */
+
+  const scores = load('scores') || { energy:75, cost:75, structural:75, isCode:75 };
+
+  const fmt = v => `${v}/100`;
+
+  document.getElementById('fb-energy').textContent     = fmt(scores.energy);
+
+  document.getElementById('fb-cost').textContent       = fmt(scores.cost);
+
+  document.getElementById('fb-structural').textContent = fmt(scores.structural);
+
+  document.getElementById('fb-iscode').textContent     = fmt(scores.isCode);
+
+
+
+  /* Pre-fill from saved feedback */
+
+  const saved = load('feedback');
+
+  if (saved) {
+
+    ['r-thermal','r-ventilation','r-budget','r-structural','r-eco','r-design'].forEach(id => {
+
+      const el = document.getElementById(id);
+
+      if (el && saved[id.replace('r-','')] !== undefined) {
+
+        el.value = saved[id.replace('r-','')];
+
+        syncVal(id, id.replace('r-','v-'));
+
+      }
+
+    });
+
+    if (saved.positive) document.getElementById('fb-positive').value = saved.positive;
+
+    if (saved.improve)  document.getElementById('fb-improve').value  = saved.improve;
+
+    if (saved.recommend) document.getElementById('fb-recommend').value = saved.recommend;
+
+    if (saved.overallRating) setStars(saved.overallRating);
+
+  }
+
+
+
+  /* Sync range value display */
+
+  function syncVal(rangeId, displayId) {
+
+    const v = document.getElementById(rangeId).value;
+
+    document.getElementById(displayId).textContent = v;
+
+    updateRadar();
+
+    updateAdaptive();
+
+  }
+
+
+
+  /* Stars */
+
+  let starRating = 0;
+
+  document.querySelectorAll('.star').forEach(star => {
+
+    star.addEventListener('click', () => {
+
+      starRating = parseInt(star.dataset.val);
+
+      setStars(starRating);
+
+    });
+
+  });
+
+  function setStars(val) {
+
+    starRating = val;
+
+    document.getElementById('overallRating').value = val;
+
+    document.querySelectorAll('.star').forEach(s => {
+
+      s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+
+    });
+
+  }
+
+
+
+  /* Radar chart */
+
+  let radarChart;
+
+  function getRatings() {
+
+    return [
+
+      parseInt(document.getElementById('r-thermal').value),
+
+      parseInt(document.getElementById('r-ventilation').value),
+
+      parseInt(document.getElementById('r-budget').value),
+
+      parseInt(document.getElementById('r-structural').value),
+
+      parseInt(document.getElementById('r-eco').value),
+
+      parseInt(document.getElementById('r-design').value),
+
+    ];
+
+  }
+
+
+
+  function initRadar() {
+
+    radarChart = new Chart(document.getElementById('feedbackRadar').getContext('2d'), {
+
+      type: 'radar',
+
+      data: {
+
+        labels: ['Thermal', 'Ventilation', 'Budget', 'Structural', 'Eco', 'Design'],
+
+        datasets: [{
+
+          label: 'Your Ratings',
+
+          data: getRatings(),
+
+          backgroundColor: 'rgba(34,197,94,.15)',
+
+          borderColor: '#22c55e',
+
+          pointBackgroundColor: '#22c55e',
+
+          borderWidth: 2,
+
+        }]
+
+      },
+
+      options: {
+
+        responsive: true, maintainAspectRatio: false,
+
+        scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } },
+
+        plugins: { legend: { display: false } }
+
+      }
+
+    });
+
+  }
+
+
+
+  function updateRadar() {
+
+    if (!radarChart) return;
+
+    radarChart.data.datasets[0].data = getRatings();
+
+    radarChart.update();
+
+  }
+
+
+
+  /* Adaptive suggestions */
+
+  function updateAdaptive() {
+
+    const thermal    = parseInt(document.getElementById('r-thermal').value);
+
+    const ventilation= parseInt(document.getElementById('r-ventilation').value);
+
+    const budget     = parseInt(document.getElementById('r-budget').value);
+
+    const structural = parseInt(document.getElementById('r-structural').value);
+
+
+
+    const sug = [];
+
+    if (thermal < 5) {
+
+      sug.push({ icon:'🌡', text:'Consider adding exterior insulation or cool-roof coating to improve thermal comfort.' });
+
+      sug.push({ icon:'🪟', text:'Add horizontal overhangs (600 mm deep) on south and west windows to block direct sun.' });
+
+    }
+
+    if (ventilation < 5) {
+
+      sug.push({ icon:'💨', text:'Cross-ventilation can be improved by adding ventilators at ceiling level on windward walls.' });
+
+      sug.push({ icon:'☀', text:'A central atrium or staircase skylight will dramatically improve natural air circulation.' });
+
+    }
+
+    if (budget < 5) {
+
+      sug.push({ icon:'💰', text:'Review material choices — switching to fly-ash bricks and local stone can reduce cost by 15%.' });
+
+      sug.push({ icon:'💡', text:'Reducing slab thickness from 150 mm to 125 mm (with proper design) saves concrete and steel.' });
+
+    }
+
+    if (structural < 5) {
+
+      sug.push({ icon:'🏗', text:'Consult a licensed structural engineer for independent review of column/foundation designs.' });
+
+    }
+
+    if (sug.length === 0) {
+
+      sug.push({ icon:'🎉', text:'Great ratings! Your design appears well-balanced across all parameters.' });
+
+    }
+
+
+
+    document.getElementById('adaptiveContent').innerHTML = sug.map(s => `
+
+      <div class="suggestion-item">
+
+        <div class="s-icon">${s.icon}</div>
+
+        <div class="s-text"><p style="color:var(--text);">${s.text}</p></div>
+
+      </div>`).join('');
+
+  }
+
+
+
+  initRadar();
+
+  updateAdaptive();
+
+
+
+  /* Submit */
+
+  function submitFeedback() {
+
+    const rating = parseInt(document.getElementById('overallRating').value) || 0;
+
+    if (rating === 0) { alert('Please give an overall star rating before submitting.'); return; }
+
+
+
+    const data = {
+
+      overallRating:  rating,
+
+      thermal:        parseInt(document.getElementById('r-thermal').value),
+
+      ventilation:    parseInt(document.getElementById('r-ventilation').value),
+
+      budget:         parseInt(document.getElementById('r-budget').value),
+
+      structural:     parseInt(document.getElementById('r-structural').value),
+
+      eco:            parseInt(document.getElementById('r-eco').value),
+
+      design:         parseInt(document.getElementById('r-design').value),
+
+      positive:       document.getElementById('fb-positive').value.trim(),
+
+      improve:        document.getElementById('fb-improve').value.trim(),
+
+      recommend:      document.getElementById('fb-recommend').value,
+
+      submittedAt:    new Date().toISOString(),
+
+    };
+
+    save('feedback', data);
+
+
+
+    document.getElementById('feedbackForm').style.display = 'none';
+
+    document.getElementById('submittedMsg').style.display = 'block';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  }
+
+</script>
+
+</body>
+
+</html>
+

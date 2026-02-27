@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Gaia</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main-content page-in">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="../index.html">🏠 Home</a> <span>›</span>
+        <a href="cost-planning.html">Cost Planning</a> <span>›</span>
+        <span>Step 7 — Dashboard</span>
+      </div>
+      <h1>📊 Final Design Dashboard</h1>
+      <p>Complete overview of your project — performance scores, all risk predictions, and smart suggestions based on everything you've entered.</p>
+    </div>
+
+    <!-- Score cards -->
+    <div class="grid-4 mb-3" id="scoreCards">
+      <div class="card text-center" style="padding:1.25rem;">
+        <div class="score-circle sc-high" style="--deg:270deg"><span id="s-energy">—</span></div>
+        <h4 style="color:var(--text);">Energy Score</h4>
+        <p>Thermal + Ventilation</p>
+      </div>
+      <div class="card text-center" style="padding:1.25rem;">
+        <div class="score-circle sc-high" style="--deg:270deg"><span id="s-cost">—</span></div>
+        <h4 style="color:var(--text);">Cost Score</h4>
+        <p>Budget vs Estimate</p>
+      </div>
+      <div class="card text-center" style="padding:1.25rem;">
+        <div class="score-circle sc-high" style="--deg:270deg"><span id="s-structural">—</span></div>
+        <h4 style="color:var(--text);">Structural Score</h4>
+        <p>Foundation + Seismic</p>
+      </div>
+      <div class="card text-center" style="padding:1.25rem;">
+        <div class="score-circle sc-high" style="--deg:270deg"><span id="s-iscode">—</span></div>
+        <h4 style="color:var(--text);">IS Code Score</h4>
+        <p>Compliance %</p>
+      </div>
+    </div>
+
+    <!-- Overall progress bars -->
+    <div class="card mb-3">
+      <div class="card-header"><span class="card-icon">📈</span><h3>Overall Performance</h3></div>
+      <div class="card-body">
+        <div class="grid-2 gap-3">
+          <div>
+            <div class="progress-row" id="prog-energy"></div>
+            <div class="progress-row" id="prog-cost"></div>
+          </div>
+          <div>
+            <div class="progress-row" id="prog-structural"></div>
+            <div class="progress-row" id="prog-iscode"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="chart-box" style="height:200px;">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 gap-3 mb-3">
+      <!-- All Predictions -->
+      <div class="card">
+        <div class="card-header"><span class="card-icon">⚠</span><h3>All Risk Predictions</h3></div>
+        <div class="card-body" id="allPredictions">
+          <div class="empty-state" style="padding:2rem;">
+            <div class="eicon">⚠</div>
+            <p>Complete all 6 steps to see full risk analysis.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Suggestions -->
+      <div class="card">
+        <div class="card-header"><span class="card-icon">💡</span><h3>Smart Suggestions</h3></div>
+        <div class="card-body" id="allSuggestions">
+          <div class="empty-state" style="padding:2rem;">
+            <div class="eicon">💡</div>
+            <p>Complete previous steps for personalised suggestions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Summary Table -->
+    <div class="card mb-3">
+      <div class="card-header"><span class="card-icon">📋</span><h3>Project Data Summary</h3></div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table id="summaryTable">
+            <thead><tr><th>Category</th><th>Parameter</th><th>Value</th><th>Status</th></tr></thead>
+            <tbody id="summaryBody">
+              <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Complete all steps to see summary.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- IS Codes Summary -->
+    <div class="card mb-3">
+      <div class="card-header"><span class="card-icon">📋</span><h3>IS Code Compliance Checklist</h3></div>
+      <div class="card-body">
+        <div class="grid-2 gap-2" id="isCodeList">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card" style="background:linear-gradient(135deg,var(--primary),#1a4a6b);color:white;">
+      <div class="card-body text-center" style="padding:2rem;">
+        <h2 style="color:white;margin-bottom:.5rem;">🎯 Design Analysis Complete</h2>
+        <p style="color:rgba(255,255,255,.75);margin-bottom:1.5rem;">Review the results above. Share your feedback to help refine the suggestions.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="feedback.html" class="btn btn-primary btn-lg">🔄 Give Feedback →</a>
+          <button class="btn btn-lg btn-print" onclick="window.print()">🖨 Print Report</button>
+          <button class="btn btn-lg btn-export" onclick="exportSummary()">📥 Export Summary</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <a href="cost-planning.html" class="btn btn-outline">← Cost Planning</a>
+      <span class="step-nav-info">Step 7 of 9</span>
+      <a href="feasibility.html" class="btn btn-primary">Next: Feasibility →</a>
+    </div>
+  </main>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/predictions.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/transitions.js"></script>
+<script>
+  renderNav('dashboard');
+  markDone('dashboard');
+
+  const allData    = getAllProjectData();
+  const { predictions, suggestions, scores } = runPredictions();
+  save('scores', scores);
+
+  /* ── Score Circles ── */
+  function setScore(id, value) {
+    const el   = document.getElementById(id);
+    const card = el?.closest('.card');
+    if (!el) return;
+    el.textContent = value;
+    const deg  = (value / 100 * 360).toFixed(0) + 'deg';
+    const cls  = value >= 75 ? 'sc-high' : value >= 50 ? 'sc-medium' : 'sc-low';
+    const circle = el.closest('.score-circle');
+    if (circle) {
+      circle.className = 'score-circle ' + cls;
+      circle.style.setProperty('--deg', deg);
+    }
+  }
+  setScore('s-energy',     scores.energy);
+  setScore('s-cost',       scores.cost);
+  setScore('s-structural', scores.structural);
+  setScore('s-iscode',     scores.isCode);
+
+  /* ── Progress Bars ── */
+  function progBar(id, label, value) {
+    const cls = value >= 75 ? 'fill-green' : value >= 50 ? 'fill-yellow' : 'fill-red';
+    document.getElementById(id).innerHTML = `
+      <div class="progress-label"><span class="lbl">${label}</span><span class="val">${value}/100</span></div>
+      <div class="progress-track"><div class="progress-fill ${cls}" style="width:${value}%"></div></div>`;
+  }
+  progBar('prog-energy',     '⚡ Energy Efficiency', scores.energy);
+  progBar('prog-cost',       '💰 Cost Efficiency',   scores.cost);
+  progBar('prog-structural', '🧱 Structural Safety',  scores.structural);
+  progBar('prog-iscode',     '📋 IS Code Compliance', scores.isCode);
+
+  /* ── Radar Chart ── */
+  new Chart(document.getElementById('radarChart').getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: ['Energy', 'Cost', 'Structural', 'IS Code'],
+      datasets: [{
+        label: 'Your Design',
+        data: [scores.energy, scores.cost, scores.structural, scores.isCode],
+        backgroundColor: 'rgba(34,197,94,0.15)',
+        borderColor: '#22c55e', pointBackgroundColor: '#22c55e',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  /* ── Predictions ── */
+  if (predictions.length > 0) {
+    const typeMap = { danger:'alert-danger', warning:'alert-warning', caution:'alert-info', info:'alert-info', success:'alert-success' };
+    const iconMap = { danger:'🔴', warning:'🟡', caution:'🔵', info:'🔵', success:'✅' };
+    document.getElementById('allPredictions').innerHTML = predictions.map(p => `
+      <div class="alert ${typeMap[p.type] || 'alert-info'} mb-2">
+        <span class="alert-icon">${iconMap[p.type] || '⚠'}</span>
+        <div class="alert-body">
+          <h4>${p.title} <span class="badge badge-info" style="margin-left:.5rem;font-size:.65rem;">${p.page}</span></h4>
+          <p>${p.desc}</p>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ── Suggestions ── */
+  if (suggestions.length > 0) {
+    document.getElementById('allSuggestions').innerHTML = suggestions.map(s => `
+      <div class="suggestion-item">
+        <div class="s-icon">${s.icon}</div>
+        <div class="s-text"><h4>${s.title}</h4><p>${s.desc}</p></div>
+      </div>`).join('');
+  }
+
+  /* ── Summary Table ── */
+  const d    = allData;
+  const rows = [];
+  const ok   = '✅', warn = '⚠', bad = '🔴';
+
+  if (d.site.location) {
+    rows.push(['Site', 'Location', d.site.location, ok]);
+    rows.push(['Site', 'Climate',  d.site.climate || '—', ok]);
+    rows.push(['Site', 'Rainfall', d.site.rainfall || '—', ok]);
+    rows.push(['Site', 'Soil Type', (d.site.soilType || '—').replace('_',' '),
+      ['loose_sand','filled','soft_clay'].includes(d.site.soilType) ? bad : ok]);
+    rows.push(['Site', 'Cross Ventilation', d.site.crossVentilation === 'yes' ? 'Planned' : 'Not planned',
+      d.site.crossVentilation === 'yes' ? ok : warn]);
+  }
+  if (d.client.buildingType) {
+    rows.push(['Client', 'Building Type', d.client.buildingType, ok]);
+    rows.push(['Client', 'Floors', d.client.floors || '—', ok]);
+    rows.push(['Client', 'Budget', d.client.budget ? '₹' + Math.round(d.client.budget).toLocaleString('en-IN') : '—', ok]);
+    rows.push(['Client', 'Future Expansion', d.client.futureExpansion || '—',
+      d.client.futureExpansion === 'yes' && !d.structural.expansionColumns ? warn : ok]);
+  }
+  if (d.materials.wallType) {
+    rows.push(['Materials', 'Wall System', (d.materials.wallType || '—').replace('_',' '), ok]);
+    rows.push(['Materials', 'Roof Type', (d.materials.roofType || '—').replace('_',' '),
+      d.site.rainfall === 'heavy' && d.materials.roofType === 'flat_rcc' ? bad : ok]);
+    rows.push(['Materials', 'Steel Grade', (d.materials.steelType || '—').replace('_',' '),
+      d.site.climate === 'coastal' && d.materials.steelType !== 'corrosion_resistant' ? bad : ok]);
+  }
+  if (d.structural.soilType) {
+    rows.push(['Structural', 'Seismic Zone', 'Zone ' + (d.structural.seismicZone || '—'),
+      d.structural.seismicZone >= 4 ? warn : ok]);
+    rows.push(['Structural', 'Plan Shape', d.structural.planShape || '—',
+      ['L','T','U','Plus'].includes(d.structural.planShape) ? warn : ok]);
+    rows.push(['Structural', 'Open Ground Floor', d.structural.openGroundFloor ? 'Yes (Stilt)' : 'No',
+      d.structural.openGroundFloor ? bad : ok]);
+  }
+  if (d.cost.estimated) {
+    const overrun = d.cost.estimated > (d.cost.budget || 0);
+    rows.push(['Cost', 'Estimated Cost', '₹' + Math.round(d.cost.estimated).toLocaleString('en-IN'),
+      overrun ? bad : ok]);
+    rows.push(['Cost', 'Budget Status', overrun ? 'Overrun' : 'Within budget', overrun ? bad : ok]);
+  }
+
+  if (rows.length > 0) {
+    document.getElementById('summaryBody').innerHTML = rows.map(r =>
+      `<tr><td><span class="badge badge-info" style="font-size:.65rem;">${r[0]}</span></td><td>${r[1]}</td><td><strong>${r[2]}</strong></td><td>${r[3]}</td></tr>`
+    ).join('');
+  }
+
+  /* ── IS Codes ── */
+  const isCodes = [
+    { code:'IS 456',     title:'Plain & Reinforced Concrete',       status: d.structural.soilType ? ok : warn },
+    { code:'IS 875-1',   title:'Dead Loads',                        status: ok },
+    { code:'IS 875-2',   title:'Live Loads',                        status: ok },
+    { code:'IS 875-3',   title:'Wind Loads',                        status: d.site.windSpeed === 'high' ? warn : ok },
+    { code:'IS 1893-1',  title:'Seismic Design of Structures',      status: d.structural.seismicZone >= 4 ? warn : ok },
+    { code:'IS 13920',   title:'Ductile Detailing of RC Structures', status: d.structural.seismicZone >= 3 ? warn : ok },
+    { code:'IS 1904',    title:'Foundation Design',                  status: ok },
+    { code:'IS 6403',    title:'Bearing Capacity of Foundations',   status: ['soft_clay','loose_sand','filled'].includes(d.structural.soilType) ? warn : ok },
+    { code:'IS 2911',    title:'Pile Foundations',                   status: d.structural.soilType === 'filled' ? warn : ok },
+    { code:'IS 1786',    title:'HYSD Steel Bars',                    status: ok },
+    { code:'IS 800',     title:'General Construction in Steel',      status: d.site.climate === 'coastal' ? warn : ok },
+    { code:'IS 2185-3',  title:'AAC Blocks',                         status: d.materials.wallType === 'aac_block' ? ok : '—' },
+    { code:'IS 2645',    title:'Waterproofing',                      status: d.site.rainfall === 'heavy' ? warn : ok },
+    { code:'NBC Part 4', title:'Fire & Life Safety',                 status: d.structural.floors > 4 && !d.structural.fireEgress ? bad : ok },
+    { code:'NBC Part 8', title:'Thermal Comfort',                    status: scores.energy < 60 ? warn : ok },
+  ];
+  document.getElementById('isCodeList').innerHTML = isCodes.map(c => `
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--border);">
+      <span>${c.status}</span>
+      <span class="is-tag">${c.code}</span>
+      <span style="font-size:.8rem;color:var(--text-muted);">${c.title}</span>
+    </div>`).join('');
+
+  /* ── Export ── */
+  function exportSummary() {
+    const lines = [
+      '=== GAIA — Building Design Report ===',
+      `Generated: ${new Date().toLocaleDateString('en-IN')}`,
+      '',
+      '--- SCORES ---',
+      `Energy Efficiency: ${scores.energy}/100`,
+      `Cost Efficiency:   ${scores.cost}/100`,
+      `Structural Safety: ${scores.structural}/100`,
+      `IS Code Compliance:${scores.isCode}/100`,
+      '',
+      '--- RISKS ---',
+      ...predictions.map(p => `[${p.type.toUpperCase()}] ${p.title}: ${p.desc}`),
+      '',
+      '--- SUGGESTIONS ---',
+      ...suggestions.map(s => `• ${s.title}: ${s.desc}`),
+    ];
+    const blob = new Blob([lines.join('\n')], { type:'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'gaia-design-report.txt';
+    a.click();
+  }
+</script>
+</body>
+</html>
