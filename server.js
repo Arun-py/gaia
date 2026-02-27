@@ -36,7 +36,7 @@ app.get('*', (req, res) => {
 });
 
 /* ── MongoDB connect ── */
-if (mongoose.connection.readyState === 0) {
+if (mongoose.connection.readyState === 0 && process.env.MONGO_URI) {
   mongoose
     .connect(process.env.MONGO_URI)
     .then(async () => {
@@ -66,7 +66,3 @@ if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
 
 /* ── Export for Vercel serverless ── */
 module.exports = app;
-
-    console.error('❌  MongoDB connection error:', err.message);
-    process.exit(1);
-  });
