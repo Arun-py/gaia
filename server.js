@@ -17,7 +17,9 @@ app.use(express.static(path.join(__dirname)));
 
 /* ── Explicit root route ── */
 app.get('/', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+    if (err) res.status(500).json({ success: false, message: 'index.html not found', dir: __dirname });
+  });
 });
 
 /* ── API Routes ── */
@@ -29,10 +31,18 @@ app.get('/api/health', (_req, res) => res.json({ status: 'OK', server: 'Gaia v1.
 /* ── Catch-all: serve index.html for any unknown non-API route ── */
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+      if (err) res.status(200).send(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=/"></head><body>Loading...</body></html>`);
+    });
   } else {
     res.status(404).json({ success: false, message: 'Not found' });
   }
+});
+
+/* ── Global error handler ── */
+app.use((err, _req, res, _next) => {
+  console.error('❌ Server error:', err.message);
+  res.status(500).json({ success: false, message: 'Internal server error', error: err.message });
 });
 
 /* ── MongoDB connect ── */
